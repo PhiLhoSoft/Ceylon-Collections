@@ -22,6 +22,7 @@ shared abstract class TreeTraversal<Node>()
 	class PreOrderIterator(Node root) satisfies Iterator<Node>
 	{
 		MutableList<Iterator<Node>> stack = LinkedList<Iterator<Node>>();
+		stack.add(Singleton(root).iterator());
 
     	shared actual Node | Finished next()
     	{
@@ -51,26 +52,24 @@ shared abstract class TreeTraversal<Node>()
 
 	class PostOrderIterator(Node root) satisfies Iterator<Node>
 	{
-		class NodeAndIterator<Node>(shared Node node, shared Iterator<Node> iterator)
+		alias NodeAndIterator => [ Node, Iterator<Node> ];
+
+		function wrap(Node node)
 		{
+			return [ node, children(node).iterator() ];
 		}
 
-		NodeAndIterator<Node> wrap(Node node)
-		{
-			return NodeAndIterator<Node>(node, children(node).iterator());
-		}
-
-		MutableList<NodeAndIterator<Node>> stack = LinkedList<NodeAndIterator<Node>>();
+		MutableList<NodeAndIterator> stack = LinkedList<NodeAndIterator>();
 		stack.add(wrap(root));
 
     	shared actual Node | Finished next()
     	{
 			while (!stack.empty)
 			{
-				NodeAndIterator<Node>? top = stack.last;
+				NodeAndIterator? top = stack.last;
 				if (exists top)
 				{
-					Node | Finished child = top.iterator.next();
+					Node | Finished child = top[1].next();
 					if (is Node child)
 					{
 						// Add this child for further processing
@@ -81,7 +80,7 @@ shared abstract class TreeTraversal<Node>()
 						// Exhausted iterator, get rid of it
 						stack.removeLast();
 						// And we return the parent
-						return top.node;
+						return top[0];
 					}
 				}
 			}
@@ -96,7 +95,7 @@ shared abstract class TreeTraversal<Node>()
 
     	shared actual Node | Finished next()
     	{
-    		Node? node = queue.removeLast();
+    		Node? node = queue.removeFirst();
     		if (exists node)
     		{
     			queue.addAll(children(node));
@@ -107,11 +106,34 @@ shared abstract class TreeTraversal<Node>()
 	}
 
 	"Each parent node is traversed before its children."
-	shared default Iterator<Node> preOrderTraversal(Node root) => PreOrderIterator(root);
+	shared Iterable<Node> preOrderTraversal(Node root)
+	{
+		object iterable satisfies Iterable<Node>
+		{
+			iterator() => PreOrderIterator(root);
+		}
+		return iterable;
+	}
+
 	"The children are traversed before their respective parents are traversed."
-	shared default Iterator<Node> postOrderTraversal(Node root) => PostOrderIterator(root);
+	shared Iterable<Node> postOrderTraversal(Node root)
+	{
+		object iterable satisfies Iterable<Node>
+		{
+			iterator() => PostOrderIterator(root);
+		}
+		return iterable;
+	}
+
 	"Nodes are traversed level by level, starting with the root node,
 	 followed by its direct child nodes, followed by its grandchild nodes, etc."
-	shared default Iterator<Node> breadthFirstTraversal(Node root) => BreadthFirstIterator(root);
+	shared Iterable<Node> breadthFirstTraversal(Node root)
+	{
+		object iterable satisfies Iterable<Node>
+		{
+			iterator() => BreadthFirstIterator(root);
+		}
+		return iterable;
+	}
 }
 

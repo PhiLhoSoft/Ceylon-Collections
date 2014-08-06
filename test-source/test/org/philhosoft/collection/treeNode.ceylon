@@ -15,10 +15,8 @@ test void testSimpleTree()
 {
 	value nodeA = SimpleTreeNode<String>("A");
 	value nodeB = SimpleTreeNode<String>("B");
-	value root = SimpleTreeNode<String>("Root");
+	value root = SimpleTreeNode<String>("Root", nodeA, nodeB);
 	nodeA.parent = nodeB.parent = root;
-	nodeA.attach();
-	nodeB.attach();
 	assertFalse(root.isLeaf());
 	assertTrue(nodeA.isLeaf());
 	assertTrue(nodeB.isLeaf());
@@ -31,17 +29,13 @@ test void testLessSimpleTree()
 	value nodeC = SimpleTreeNode<String>("A C");
 	value nodeD = SimpleTreeNode<String>("A D");
 	value nodeE = SimpleTreeNode<String>("B E");
-	value nodeA = SimpleTreeNode<String>("A");
-	value nodeB = SimpleTreeNode<String>("B");
-	value root = SimpleTreeNode<String>("Root");
+	value nodeA = SimpleTreeNode<String>("A", nodeC, nodeD);
+	value nodeB = SimpleTreeNode<String>("B", nodeE);
+	value root = SimpleTreeNode<String>("Root", nodeA, nodeB);
 	nodeC.parent = nodeD.parent = nodeA;
 	nodeE.parent = nodeB;
 	nodeA.parent = nodeB.parent = root;
-	nodeA.attach();
-	nodeB.attach();
-	nodeC.attach();
-	nodeD.attach();
-	nodeE.attach();
+
 	assertFalse(root.isLeaf());
 	assertFalse(nodeA.isLeaf());
 	assertFalse(nodeB.isLeaf());
