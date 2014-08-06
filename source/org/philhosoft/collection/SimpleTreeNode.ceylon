@@ -13,6 +13,16 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 
 	shared actual Boolean isLeaf() => children.empty;
 
+	shared SimpleTreeNode<Element> attach(TreeNode<Element> node = this)
+	{
+		for (child in node.children)
+		{
+			child.parent = node;
+			attach(child);
+		}
+		return this;
+	}
+
 	shared void removeFromParent()
 	{
 		if (exists p = parent)

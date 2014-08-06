@@ -26,25 +26,27 @@ shared abstract class TreeTraversal<Node>()
 
     	shared actual Node | Finished next()
     	{
-    		Iterator<Node>? iterator = stack.last;
-        	if (exists iterator)
-        	{
-        		Node | Finished node = iterator.next();
-        		if (is Finished node)
-        		{
-        			// This iterator is exhausted...
-        			stack.removeLast();
-        			// try the next one
-        			return next();
-        		}
-        		else if (is Node node) // TODO ask why I need this second if
-        		{
-        			// Found a new node, add an iterator on its children to the stack, for further processing.
-        			Iterator<Node> childrenIterator = children(node).iterator();
-        			stack.add(childrenIterator);
-        			// And give the found node.
-        			return node;
-        		}
+    		while (!stack.empty)
+    		{
+	    		Iterator<Node>? iterator = stack.last;
+	        	if (exists iterator)
+	        	{
+	        		Node | Finished node = iterator.next();
+	        		if (is Node node)
+	        		{
+	        			// Found a new node, add an iterator on its children to the stack, for further processing.
+	        			Iterator<Node> childrenIterator = children(node).iterator();
+	        			stack.add(childrenIterator);
+	        			// And give the found node.
+	        			return node;
+	        		}
+	        		else
+	        		{
+	        			// This iterator is exhausted...
+	        			stack.removeLast();
+	        			// try the next one in the loop
+	        		}
+	        	}
         	}
         	return finished;
     	}
@@ -105,7 +107,8 @@ shared abstract class TreeTraversal<Node>()
     	}
 	}
 
-	"Each parent node is traversed before its children."
+	"Each parent node is traversed before its children.
+	 Can be used to clone a tree. Also useful for expression trees."
 	shared Iterable<Node> preOrderTraversal(Node root)
 	{
 		object iterable satisfies Iterable<Node>
@@ -115,7 +118,8 @@ shared abstract class TreeTraversal<Node>()
 		return iterable;
 	}
 
-	"The children are traversed before their respective parents are traversed."
+	"The children are traversed before their respective parents are traversed.<br>
+	 Useful to delete or free nodes and values of an entire tree."
 	shared Iterable<Node> postOrderTraversal(Node root)
 	{
 		object iterable satisfies Iterable<Node>
