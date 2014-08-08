@@ -1,16 +1,20 @@
 import org.philhosoft.collection { ... }
-import ceylon.test { test, assertEquals, beforeTest }
+import ceylon.test { test, assertEquals }
 
-
-SimpleTreeNode<String> nodeF = SimpleTreeNode<String>("c F");
-SimpleTreeNode<String> nodeG = SimpleTreeNode<String>("c G");
-SimpleTreeNode<String> nodeH = SimpleTreeNode<String>("e H");
-SimpleTreeNode<String> nodeC = SimpleTreeNode<String>("a C", nodeF, nodeG);
-SimpleTreeNode<String> nodeD = SimpleTreeNode<String>("a D");
-SimpleTreeNode<String> nodeE = SimpleTreeNode<String>("b E", nodeH);
-SimpleTreeNode<String> nodeA = SimpleTreeNode<String>("A", nodeC, nodeD);
-SimpleTreeNode<String> nodeB = SimpleTreeNode<String>("B", nodeE);
-SimpleTreeNode<String> root = SimpleTreeNode<String>("Root", nodeA, nodeB).attach();
+SimpleTreeNode<String> root = SimpleTreeNode<String>("Root",
+		SimpleTreeNode<String>("A",
+			SimpleTreeNode<String>("a C",
+				SimpleTreeNode<String>("c F"),
+				SimpleTreeNode<String>("c G")
+			),
+			SimpleTreeNode<String>("a D")
+		),
+		SimpleTreeNode<String>("B",
+			SimpleTreeNode<String>("b E",
+				SimpleTreeNode<String>("e H")
+			)
+		)
+	).attach();
 
 SimpleTreeNode<String> singleNode = SimpleTreeNode<String>("Single");
 

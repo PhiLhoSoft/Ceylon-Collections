@@ -51,3 +51,50 @@ test void testLessSimpleTree()
 	assertEquals(nodeB, nodeE.parent);
 }
 
+test void testDetachAttach()
+{
+	SimpleTreeNode<String> root = SimpleTreeNode<String>("Root",
+		SimpleTreeNode<String>("A",
+			SimpleTreeNode<String>("a C",
+				SimpleTreeNode<String>("c F"),
+				SimpleTreeNode<String>("c G")
+				),
+			SimpleTreeNode<String>("a D")
+		),
+		SimpleTreeNode<String>("B",
+			SimpleTreeNode<String>("b E",
+				SimpleTreeNode<String>("e H")
+			)
+		)
+	).attach();
+
+	value tt = treeTraversal.preOrderTraversal(root);
+	value result1 = [ for (tn in tt) tn.element ];
+	assertEquals(result1, [ "Root", "A", "a C", "c F", "c G", "a D", "B", "b E", "e H" ]);
+
+	if (exists a = root.children[0], exists ac = a.children[0])
+	{
+		assertEquals("a C", ac.element);
+		ac.removeFromParent();
+		if (exists b = root.children[1], exists be = b.children[0])
+		{
+			assertEquals("b E", be.element);
+			ac.attachTo(be);
+		}
+	}
+
+	value result2 = [ for (tn in tt) tn.element ];
+	assertEquals(result2, [ "Root", "A", "a D", "B", "b E", "e H", "a C", "c F", "c G" ]);
+
+	if (exists b = root.children[1], exists be = b.children[0])
+	{
+		assertEquals("b E", be.element);
+		if (exists a = root.children[0])
+		{
+			be.attachTo(a);
+		}
+	}
+
+	value result3 = [ for (tn in tt) tn.element ];
+	assertEquals(result3, [ "Root", "A", "a D", "b E", "e H", "a C", "c F", "c G", "B" ]);
+}

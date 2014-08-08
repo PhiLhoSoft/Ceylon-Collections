@@ -14,4 +14,10 @@ shared interface TreeNode<Element>
 
 	"Returns `true` if this node has no children."
 	shared formal Boolean isLeaf();
+
+	"Removes the current node from its parent, detaching it and its sub-tree from the current tree."
+	shared formal void removeFromParent();
+
+	"Attaches the current node (and its sub-tree) to a new parent."
+	shared formal void attachTo(TreeNode<Element> node);
 }
