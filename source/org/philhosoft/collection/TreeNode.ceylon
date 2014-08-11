@@ -20,4 +20,12 @@ shared interface TreeNode<Element>
 
 	"Attaches the current node (and its sub-tree) to a new parent."
 	shared formal void attachTo(TreeNode<Element> node);
+
+	//"Search for a given element, using the given tree transversal method. Returns null if not found."
+	// Might need to provide an equals method too, or to bound Element.
+	//shared formal TreeNode<Element>? searchElement(
+	//	Element item,
+	//	Iterable<TreeNode<Element>> transversal);
+
+	// TODO add methods to compute depth (from a node to the deepest child) and height (from a node to its root).
 }

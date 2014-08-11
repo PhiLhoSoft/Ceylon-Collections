@@ -68,7 +68,7 @@ test void testDetachAttach()
 		)
 	).attach();
 
-	value tt = treeTraversal.preOrderTraversal(root);
+	value tt = treeTraversal.preOrderTraversal(root); // From treeTraversal.ceylon
 	value result1 = [ for (tn in tt) tn.element ];
 	assertEquals(result1, [ "Root", "A", "a C", "c F", "c G", "a D", "B", "b E", "e H" ]);
 

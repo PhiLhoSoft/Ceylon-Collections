@@ -14,6 +14,7 @@ import ceylon.collection { LinkedList, MutableList }
    in post-order (children before parents, efgbchida)
    or in breadth-first order (first level, second level, etc., abcdefghi).
 """
+// Inspired by Guava's TreeTraverser...
 shared abstract class TreeTraversal<Node>()
 {
 	"Returns the children of the given node (root of tree). Abstracts the tree implementation."
@@ -43,7 +44,7 @@ shared abstract class TreeTraversal<Node>()
 	        		else
 	        		{
 	        			// This iterator is exhausted...
-	        			stack.removeLast();
+	        			stack.deleteLast();
 	        			// try the next one in the loop
 	        		}
 	        	}
@@ -80,7 +81,7 @@ shared abstract class TreeTraversal<Node>()
 					else
 					{
 						// Exhausted iterator, get rid of it
-						stack.removeLast();
+						stack.deleteLast();
 						// And we return the parent
 						return top[0];
 					}
@@ -97,7 +98,7 @@ shared abstract class TreeTraversal<Node>()
 
     	shared actual Node | Finished next()
     	{
-    		Node? node = queue.removeFirst();
+    		Node? node = queue.deleteFirst();
     		if (exists node)
     		{
     			queue.addAll(children(node));

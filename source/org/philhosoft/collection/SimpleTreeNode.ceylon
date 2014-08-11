@@ -30,7 +30,7 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 	{
 		if (exists p = parent)
 		{
-			p.children.removeElement(this);
+			p.children.remove(this);
 			parent = null;
 		}
 	}
@@ -45,6 +45,20 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 			node.children.add(this);
 		}
 	}
+
+	//shared actual TreeNode<Element>? searchElement(
+	//	Element item,
+	//	Iterable<TreeNode<Element>> transversal)
+	//{
+	//	for (node in transversal)
+	//	{
+	//		if (exists node.element && node.element == item)
+	//		{
+	//			return node;
+	//		}
+	//	}
+	//	return null;
+	//}
 
 	string => "SimpleTreeNode{``element else "(no element)"``, ``children.size`` children}";
 }
