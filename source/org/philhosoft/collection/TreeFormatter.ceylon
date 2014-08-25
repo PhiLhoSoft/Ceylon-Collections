@@ -1,3 +1,8 @@
+import ceylon.collection
+{
+	StringBuilder
+}
+
 shared class TreeFormatter<Element>()
 		given Element satisfies Object
 {
