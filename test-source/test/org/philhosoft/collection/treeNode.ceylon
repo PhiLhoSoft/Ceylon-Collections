@@ -72,11 +72,11 @@ test void testDetachAttach()
 	value result1 = [ for (tn in tt) tn.element ];
 	assertEquals(result1, [ "Root", "A", "a C", "c F", "c G", "a D", "B", "b E", "e H" ]);
 
-	if (exists a = root.children[0], exists ac = a.children[0])
+	if (exists a = root.children.first, exists ac = a.children.first)
 	{
 		assertEquals("a C", ac.element);
 		ac.removeFromParent();
-		if (exists b = root.children[1], exists be = b.children[0])
+		if (exists b = root.children.getFromFirst(1), exists be = b.children.first)
 		{
 			assertEquals("b E", be.element);
 			ac.attachTo(be);
@@ -86,10 +86,10 @@ test void testDetachAttach()
 	value result2 = [ for (tn in tt) tn.element ];
 	assertEquals(result2, [ "Root", "A", "a D", "B", "b E", "e H", "a C", "c F", "c G" ]);
 
-	if (exists b = root.children[1], exists be = b.children[0])
+	if (exists b = root.children.getFromFirst(1), exists be = b.children.first)
 	{
 		assertEquals("b E", be.element);
-		if (exists a = root.children[0])
+		if (exists a = root.children.first)
 		{
 			be.attachTo(a);
 		}

@@ -7,15 +7,14 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 	// See https://groups.google.com/d/msg/ceylon-users/KkohG7kHI64/Io5uc3759WwJ
 	shared actual variable TreeNode<Element>? parent = null;
 
-	// TODO Should we hide this list, to control what is going on, to avoid loops and such?
-	// Or should we leave the user the possibility to shoot on his foot?
-	shared actual MutableList<TreeNode<Element>> children = LinkedList(initialChildren);
+	MutableList<TreeNode<Element>> childList = LinkedList(initialChildren);
+	shared actual Iterable<TreeNode<Element>> children => childList;
 
 	shared actual variable Element? element;
 
-	shared actual Boolean isLeaf() => children.empty;
+	shared actual Boolean isLeaf() => childList.empty;
 
-	"To be called on root of the full tree to set up the parents of each node."
+	"To be called on the root of the full tree after building it, to set up the parents of each node."
 	shared SimpleTreeNode<Element> attach(TreeNode<Element> node = this)
 	{
 		for (child in node.children)
@@ -28,21 +27,24 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 
 	shared actual void removeFromParent()
 	{
-		if (exists p = parent)
+		if (exists p = parent, is SimpleTreeNode<Element> p)
 		{
-			p.children.remove(this);
+			p.childList.remove(this);
 			parent = null;
 		}
 	}
 
 	shared actual void attachTo(TreeNode<Element> node)
 	{
-		removeFromParent();
-		// TODO assert that the given node isn't part of the tree below this node...
-		parent = node;
-		if (!node.children.contains(this))
+		if (is SimpleTreeNode<Element> node)
 		{
-			node.children.add(this);
+			removeFromParent();
+			// TODO assert that the given node isn't part of the tree below this node...
+			parent = node;
+			if (!node.childList.contains(this))
+			{
+				node.childList.add(this);
+			}
 		}
 	}
 
@@ -60,5 +62,5 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 	//	return null;
 	//}
 
-	string => "SimpleTreeNode{``element else "(no element)"``, ``children.size`` children}";
+	string => "SimpleTreeNode{``element else "(no element)"``, ``childList.size`` children}";
 }
