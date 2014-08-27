@@ -29,23 +29,33 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 	{
 		if (exists p = parent, is SimpleTreeNode<Element> p)
 		{
-			p.childList.remove(this);
-			parent = null;
+			p.removeChild(this);
 		}
 	}
 
-	shared actual void attachTo(TreeNode<Element> node)
+	shared actual void attachTo(TreeNode<Element> newParent)
 	{
-		if (is SimpleTreeNode<Element> node)
+		if (is SimpleTreeNode<Element> newParent)
 		{
 			removeFromParent();
 			// TODO assert that the given node isn't part of the tree below this node...
-			parent = node;
-			if (!node.childList.contains(this))
-			{
-				node.childList.add(this);
-			}
+			newParent.addChild(this);
 		}
+	}
+
+	void addChild(TreeNode<Element> child)
+	{
+		if (!childList.contains(child))
+		{
+			childList.add(child);
+			child.parent = this;
+		}
+	}
+
+	void removeChild(TreeNode<Element> child)
+	{
+		childList.remove(child);
+		child.parent = null;
 	}
 
 	//shared actual TreeNode<Element>? searchElement(

@@ -1,22 +1,22 @@
 import org.philhosoft.collection { ... }
 import ceylon.test { test, assertEquals }
 
-SimpleTreeNode<String> root = SimpleTreeNode<String>("Root",
-		SimpleTreeNode<String>("A",
-			SimpleTreeNode<String>("a C",
-				SimpleTreeNode<String>("c F"),
-				SimpleTreeNode<String>("c G")
+SimpleTreeNode<String> root = SimpleTreeNode("Root",
+		SimpleTreeNode("A",
+			SimpleTreeNode("a C",
+				SimpleTreeNode("c F"),
+				SimpleTreeNode("c G")
 			),
-			SimpleTreeNode<String>("a D")
+			SimpleTreeNode("a D")
 		),
-		SimpleTreeNode<String>("B",
-			SimpleTreeNode<String>("b E",
-				SimpleTreeNode<String>("e H")
+		SimpleTreeNode("B",
+			SimpleTreeNode("b E",
+				SimpleTreeNode("e H")
 			)
 		)
 	).attach();
 
-SimpleTreeNode<String> singleNode = SimpleTreeNode<String>("Single");
+SimpleTreeNode<String> singleNode = SimpleTreeNode("Single");
 
 object treeTraversal extends TreeTraversal<TreeNode<String>>()
 {

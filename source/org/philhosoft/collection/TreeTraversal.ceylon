@@ -1,4 +1,10 @@
-import ceylon.collection { LinkedList, MutableList }
+import ceylon.collection
+{
+	LinkedList,
+	MutableList,
+	Queue,
+	Stack
+}
 
 """Provides methods to traverse a tree with various strategies.<br>
    Given a tree:
@@ -22,34 +28,30 @@ shared abstract class TreeTraversal<Node>()
 
 	class PreOrderIterator(Node root) satisfies Iterator<Node>
 	{
-		MutableList<Iterator<Node>> stack = LinkedList<Iterator<Node>>();
-		stack.add(Singleton(root).iterator());
+		Stack<Iterator<Node>> stack = LinkedList<Iterator<Node>>();
+		stack.push(Singleton(root).iterator());
 
     	shared actual Node | Finished next()
     	{
-    		while (!stack.empty)
+    		while (exists iterator = stack.top)
     		{
-	    		Iterator<Node>? iterator = stack.last;
-	        	if (exists iterator)
-	        	{
-	        		Node | Finished node = iterator.next();
-	        		if (is Node node)
-	        		{
-	        			// Found a new node, add an iterator on its children to the stack, for further processing.
-	        			Iterator<Node> childrenIterator = children(node).iterator();
-	        			stack.add(childrenIterator);
-	        			// And give the found node.
-	        			return node;
-	        		}
-	        		else
-	        		{
-	        			// This iterator is exhausted...
-	        			stack.deleteLast();
-	        			// try the next one in the loop
-	        		}
-	        	}
+        		Node | Finished node = iterator.next();
+        		if (is Node node)
+        		{
+        			// Found a new node, add an iterator on its children to the stack, for further processing.
+        			Iterator<Node> childrenIterator = children(node).iterator();
+        			stack.push(childrenIterator);
+        			// And give the found node.
+        			return node;
+        		}
+        		else
+        		{
+        			// This iterator is exhausted...
+        			stack.pop();
+        			// try the next one in the loop
+        		}
         	}
-        	return finished;
+    		return finished;
     	}
 	}
 
@@ -62,29 +64,25 @@ shared abstract class TreeTraversal<Node>()
 			return [ node, children(node).iterator() ];
 		}
 
-		MutableList<NodeAndIterator> stack = LinkedList<NodeAndIterator>();
-		stack.add(wrap(root));
+		Stack<NodeAndIterator> stack = LinkedList<NodeAndIterator>();
+		stack.push(wrap(root));
 
     	shared actual Node | Finished next()
     	{
-			while (!stack.empty)
+			while (exists top = stack.top)
 			{
-				NodeAndIterator? top = stack.last;
-				if (exists top)
+				Node | Finished child = top[1].next();
+				if (is Node child)
 				{
-					Node | Finished child = top[1].next();
-					if (is Node child)
-					{
-						// Add this child for further processing
-						stack.add(wrap(child));
-					}
-					else
-					{
-						// Exhausted iterator, get rid of it
-						stack.deleteLast();
-						// And we return the parent
-						return top[0];
-					}
+					// Add this child for further processing
+					stack.push(wrap(child));
+				}
+				else
+				{
+					// Exhausted iterator, get rid of it
+					stack.pop();
+					// And we return the parent
+					return top[0];
 				}
 			}
         	return finished;
@@ -93,15 +91,18 @@ shared abstract class TreeTraversal<Node>()
 
 	class BreadthFirstIterator(Node root) satisfies Iterator<Node>
 	{
-		MutableList<Node> queue = LinkedList<Node>();
-		queue.add(root);
+		Queue<Node> queue = LinkedList<Node>();
+		queue.offer(root);
 
     	shared actual Node | Finished next()
     	{
-    		Node? node = queue.deleteFirst();
+    		Node? node = queue.accept();
     		if (exists node)
     		{
-    			queue.addAll(children(node));
+    			for (child in children(node))
+    			{
+	    			queue.offer(child);
+	    		}
     			return node;
     		}
         	return finished;

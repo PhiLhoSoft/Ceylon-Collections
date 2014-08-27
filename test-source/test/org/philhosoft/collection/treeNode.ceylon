@@ -12,9 +12,9 @@ test void testEmptyTreeNode()
 
 test void testSimpleTree()
 {
-	value nodeA = SimpleTreeNode<String>("A");
-	value nodeB = SimpleTreeNode<String>("B");
-	value root = SimpleTreeNode<String>("Root", nodeA, nodeB).attach();
+	value nodeA = SimpleTreeNode("A");
+	value nodeB = SimpleTreeNode("B");
+	value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
 	assertFalse(root.isLeaf());
 	assertTrue(nodeA.isLeaf());
 	assertTrue(nodeB.isLeaf());
@@ -26,12 +26,12 @@ test void testSimpleTree()
 
 test void testLessSimpleTree()
 {
-	value nodeC = SimpleTreeNode<String>("A C");
-	value nodeD = SimpleTreeNode<String>("A D");
-	value nodeE = SimpleTreeNode<String>("B E");
-	value nodeA = SimpleTreeNode<String>("A", nodeC, nodeD);
-	value nodeB = SimpleTreeNode<String>("B", nodeE);
-	value root = SimpleTreeNode<String>("Root", nodeA, nodeB).attach();
+	value nodeC = SimpleTreeNode("A C");
+	value nodeD = SimpleTreeNode("A D");
+	value nodeE = SimpleTreeNode("B E");
+	value nodeA = SimpleTreeNode("A", nodeC, nodeD);
+	value nodeB = SimpleTreeNode("B", nodeE);
+	value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
 
 	assertFalse(root.isLeaf());
 	assertFalse(nodeA.isLeaf());
@@ -53,17 +53,17 @@ test void testLessSimpleTree()
 
 test void testDetachAttach()
 {
-	SimpleTreeNode<String> root = SimpleTreeNode<String>("Root",
-		SimpleTreeNode<String>("A",
-			SimpleTreeNode<String>("a C",
-				SimpleTreeNode<String>("c F"),
-				SimpleTreeNode<String>("c G")
+	SimpleTreeNode<String> root = SimpleTreeNode("Root",
+		SimpleTreeNode("A",
+			SimpleTreeNode("a C",
+				SimpleTreeNode("c F"),
+				SimpleTreeNode("c G")
 				),
-			SimpleTreeNode<String>("a D")
+			SimpleTreeNode("a D")
 		),
-		SimpleTreeNode<String>("B",
-			SimpleTreeNode<String>("b E",
-				SimpleTreeNode<String>("e H")
+		SimpleTreeNode("B",
+			SimpleTreeNode("b E",
+				SimpleTreeNode("e H")
 			)
 		)
 	).attach();
@@ -89,6 +89,11 @@ test void testDetachAttach()
 	if (exists b = root.children.getFromFirst(1), exists be = b.children.first)
 	{
 		assertEquals("b E", be.element);
+
+		value newNode = SimpleTreeNode("b I");
+		newNode.attachTo(b);
+		assertEquals(b.children.size, 2);
+
 		if (exists a = root.children.first)
 		{
 			be.attachTo(a);
@@ -96,5 +101,5 @@ test void testDetachAttach()
 	}
 
 	value result3 = [ for (tn in tt) tn.element ];
-	assertEquals(result3, [ "Root", "A", "a D", "b E", "e H", "a C", "c F", "c G", "B" ]);
+	assertEquals(result3, [ "Root", "A", "a D", "b E", "e H", "a C", "c F", "c G", "B", "b I" ]);
 }
