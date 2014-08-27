@@ -1,24 +1,56 @@
 import ceylon.collection
 {
-	StringBuilder
+	StringBuilder,
+	Stack,
+	LinkedList
 }
 
 shared class TreeFormatter<Element>()
-		given Element satisfies Object
 {
 	shared String formatAsNewick(TreeNode<Element> root)
 	{
-		object treeTraversal extends TreeTraversal<TreeNode<Element>>()
+		class PostOrderIteration(TreeNode<Element> root)
 		{
-			shared actual {TreeNode<Element>*} children(TreeNode<Element> root) => root.children;
-		}
-		value tt = treeTraversal.postOrderTraversal(root);
-		value sb = StringBuilder();
+			//alias NodeAndIterator => [ TreeNode<Element>, Iterator<TreeNode<Element>> ];
 
-		for (node in tt)
-		{
-			sb.append(""); // TODO!
+			function wrap(TreeNode<Element> node)
+			{
+				return [ node, node.children.iterator() ];
+			}
+
+			Stack<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]> stack = LinkedList<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]>();
+			stack.push(wrap(root));
+
+			shared void iterate(StringBuilder sb)
+			{
+				while (exists top = stack.top)
+				{
+					sb.append(",");
+					TreeNode<Element> | Finished child = top[1].next();
+					if (is TreeNode<Element> child)
+					{
+						// Add this child for further processing
+						sb.append("(");
+						stack.push(wrap(child));
+					}
+					else
+					{
+						// Exhausted iterator, get rid of it
+						stack.pop();
+						sb.append(")");
+						// And we add the parent
+						if (exists e = top[0].element)
+						{
+							sb.append(e.string);
+						}
+					}
+				}
+			}
 		}
+
+		value ppi = PostOrderIteration(root);
+		value sb = StringBuilder();
+		ppi.iterate(sb);
 
 		return sb.string;
 	}

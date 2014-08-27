@@ -4,7 +4,18 @@ import ceylon.test { test, assertTrue, assertFalse, assertNull, assertEquals }
 test void testEmptyTreeNode()
 {
 	value node = SimpleTreeNode<String>();
+
 	assertNull(node.element);
+	assertNull(node.parent);
+	assertTrue(node.children.empty);
+	assertTrue(node.isLeaf());
+}
+
+test void testSingleNodeTree()
+{
+	value node = SimpleTreeNode<String>("Root");
+
+	assertEquals(node.element, "Root");
 	assertNull(node.parent);
 	assertTrue(node.children.empty);
 	assertTrue(node.isLeaf());
@@ -15,6 +26,7 @@ test void testSimpleTree()
 	value nodeA = SimpleTreeNode("A");
 	value nodeB = SimpleTreeNode("B");
 	value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
+
 	assertFalse(root.isLeaf());
 	assertTrue(nodeA.isLeaf());
 	assertTrue(nodeB.isLeaf());
