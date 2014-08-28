@@ -8,7 +8,7 @@ test void testEmptyTreeNode()
 	assertNull(node.element);
 	assertNull(node.parent);
 	assertTrue(node.children.empty);
-	assertTrue(node.isLeaf());
+	assertTrue(node.isLeaf);
 }
 
 test void testSingleNodeTree()
@@ -18,7 +18,7 @@ test void testSingleNodeTree()
 	assertEquals(node.element, "Root");
 	assertNull(node.parent);
 	assertTrue(node.children.empty);
-	assertTrue(node.isLeaf());
+	assertTrue(node.isLeaf);
 }
 
 test void testSimpleTree()
@@ -27,9 +27,9 @@ test void testSimpleTree()
 	value nodeB = SimpleTreeNode("B");
 	value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
 
-	assertFalse(root.isLeaf());
-	assertTrue(nodeA.isLeaf());
-	assertTrue(nodeB.isLeaf());
+	assertFalse(root.isLeaf);
+	assertTrue(nodeA.isLeaf);
+	assertTrue(nodeB.isLeaf);
 	assertTrue(root.children.contains(nodeA));
 	assertTrue(root.children.contains(nodeB));
 	assertEquals(root, nodeA.parent);
@@ -45,12 +45,12 @@ test void testLessSimpleTree()
 	value nodeB = SimpleTreeNode("B", nodeE);
 	value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
 
-	assertFalse(root.isLeaf());
-	assertFalse(nodeA.isLeaf());
-	assertFalse(nodeB.isLeaf());
-	assertTrue(nodeC.isLeaf());
-	assertTrue(nodeD.isLeaf());
-	assertTrue(nodeE.isLeaf());
+	assertFalse(root.isLeaf);
+	assertFalse(nodeA.isLeaf);
+	assertFalse(nodeB.isLeaf);
+	assertTrue(nodeC.isLeaf);
+	assertTrue(nodeD.isLeaf);
+	assertTrue(nodeE.isLeaf);
 	assertTrue(root.children.contains(nodeA));
 	assertTrue(root.children.contains(nodeB));
 	assertTrue(nodeA.children.contains(nodeC));

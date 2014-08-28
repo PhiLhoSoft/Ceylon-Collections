@@ -13,7 +13,7 @@ shared interface TreeNode<Element>
 	shared formal Iterable<TreeNode<Element>> children;
 
 	"Returns `true` if this node has no children."
-	shared formal Boolean isLeaf();
+	shared formal Boolean isLeaf;
 
 	"Removes the current node from its parent, detaching it and its sub-tree from the current tree."
 	shared formal void removeFromParent();

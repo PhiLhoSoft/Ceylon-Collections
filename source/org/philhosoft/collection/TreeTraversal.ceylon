@@ -1,7 +1,6 @@
 import ceylon.collection
 {
 	LinkedList,
-	MutableList,
 	Queue,
 	Stack
 }
@@ -19,13 +18,13 @@ import ceylon.collection
    it can be iterated in pre-order (parents before children, abefgcdhi),
    in post-order (children before parents, efgbchida)
    or in breadth-first order (first level, second level, etc., abcdefghi).
+
+   [[children]] function returns the children of the given node (root of tree).
+   It allows to abstract the tree implementation.
 """
 // Inspired by Guava's TreeTraverser...
-shared abstract class TreeTraversal<Node>()
+shared class TreeTraversal<Node>({Node*}(Node) children)
 {
-	"Returns the children of the given node (root of tree). Abstracts the tree implementation."
-	shared formal Iterable<Node> children(Node root);
-
 	class PreOrderIterator(Node root) satisfies Iterator<Node>
 	{
 		Stack<Iterator<Node>> stack = LinkedList<Iterator<Node>>();

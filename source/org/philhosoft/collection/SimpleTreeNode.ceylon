@@ -12,7 +12,7 @@ shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialC
 
 	shared actual variable Element? element;
 
-	shared actual Boolean isLeaf() => childList.empty;
+	shared actual Boolean isLeaf => childList.empty;
 
 	"To be called on the root of the full tree after building it, to set up the parents of each node."
 	shared SimpleTreeNode<Element> attach(TreeNode<Element> node = this)

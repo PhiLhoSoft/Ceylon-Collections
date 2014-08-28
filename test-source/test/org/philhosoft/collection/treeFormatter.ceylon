@@ -1,5 +1,5 @@
 import org.philhosoft.collection { ... }
-import ceylon.test { test, assertTrue, assertFalse, assertNull, assertEquals }
+import ceylon.test { test, assertEquals }
 
 test void testFormatEmptyTreeNode()
 {
@@ -14,7 +14,7 @@ test void testFormatSingleRoot()
 	value root = SimpleTreeNode<String>("Root");
 
 	value result = TreeFormatter<String>().formatAsNewick(root);
-	assertEquals(result, "()");
+	assertEquals(result, "()Root");
 }
 
 test void testFormatSimpleTree()
@@ -24,7 +24,15 @@ test void testFormatSimpleTree()
 	value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
 
 	value result = TreeFormatter<String>().formatAsNewick(root);
-	assertEquals(result, "()");
+	assertEquals(result, "(A,B)Root");
+}
+
+test void testFormatLinearTree()
+{
+	value root = SimpleTreeNode("Root", SimpleTreeNode("A", SimpleTreeNode("B", SimpleTreeNode("C")))).attach();
+
+	value result = TreeFormatter<String>().formatAsNewick(root);
+	assertEquals(result, "(((C)B)A)Root");
 }
 
 test void testFormatLessSimpleTree()
@@ -37,7 +45,7 @@ test void testFormatLessSimpleTree()
 	value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
 
 	value result = TreeFormatter<String>().formatAsNewick(root);
-	assertEquals(result, "()");
+	assertEquals(result, "((A C,A D)A,(B E)B)Root");
 }
 
 test void testFormatLastTree()
@@ -47,7 +55,7 @@ test void testFormatLastTree()
 			SimpleTreeNode("a C",
 				SimpleTreeNode("c F"),
 				SimpleTreeNode("c G")
-				),
+			),
 			SimpleTreeNode("a D")
 		),
 		SimpleTreeNode("B",
@@ -58,5 +66,36 @@ test void testFormatLastTree()
 	).attach();
 
 	value result = TreeFormatter<String>().formatAsNewick(root);
-	assertEquals(result, "()");
+	assertEquals(result, "(((c F,c G)a C,a D)A,((e H)b E)B)Root");
+}
+
+test void testFormatCustomElement()
+{
+	class Custom(shared Integer n, shared Float whatever) { string => "Custom{``n``, ``whatever``}"; }
+	function customAsString(Custom? c) => c?.n?.string else "?";
+
+	SimpleTreeNode<Custom> rootS = SimpleTreeNode(Custom(1, 5.0),
+		SimpleTreeNode(Custom(2, 5.1)), SimpleTreeNode(Custom(3, 5.2))
+	).attach();
+
+	SimpleTreeNode<Custom> rootC = SimpleTreeNode(Custom(1, 1.0),
+		SimpleTreeNode(Custom(2, 2.1),
+			SimpleTreeNode(Custom(5, 3.1),
+				SimpleTreeNode(Custom(8, 4.1)),
+				SimpleTreeNode(Custom(9, 4.2))
+			),
+			SimpleTreeNode(Custom(6, 3.2))
+		),
+		SimpleTreeNode(Custom(3, 2.2),
+			SimpleTreeNode(Custom(7, 3.3),
+				SimpleTreeNode(Custom(10, 4.3))
+			)
+		),
+		SimpleTreeNode(Custom(4, 2.2), SimpleTreeNode<Custom>())
+	).attach();
+
+	value resultS = TreeFormatter<Custom>(customAsString).formatAsNewick(rootS);
+	assertEquals(resultS, "((2,3)1");
+	value resultC = TreeFormatter<Custom>(customAsString).formatAsNewick(rootC);
+	assertEquals(resultC, "(((8,9)5,6)2,((10)7)3,(?)4)1");
 }

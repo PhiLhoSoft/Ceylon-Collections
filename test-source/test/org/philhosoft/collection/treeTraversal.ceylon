@@ -1,29 +1,25 @@
 import org.philhosoft.collection { ... }
 import ceylon.test { test, assertEquals }
 
-object treeTraversal extends TreeTraversal<TreeNode<String>>()
-{
-	shared actual {TreeNode<String>*} children(TreeNode<String> root) => root.children;
-}
+TreeTraversal<TreeNode<String>> treeTraversal = TreeTraversal<TreeNode<String>>(TreeNode<String>.children);
 
 // Restrict scope of tests
 class TestTreeTraversal()
 {
-
 SimpleTreeNode<String> root = SimpleTreeNode("Root",
-		SimpleTreeNode("A",
-			SimpleTreeNode("a C",
-				SimpleTreeNode("c F"),
-				SimpleTreeNode("c G")
+	SimpleTreeNode("A",
+		SimpleTreeNode("a C",
+			SimpleTreeNode("c F"),
+			SimpleTreeNode("c G")
 			),
-			SimpleTreeNode("a D")
-		),
-		SimpleTreeNode("B",
-			SimpleTreeNode("b E",
-				SimpleTreeNode("e H")
-			)
+		SimpleTreeNode("a D")
+	),
+	SimpleTreeNode("B",
+		SimpleTreeNode("b E",
+			SimpleTreeNode("e H")
 		)
-	).attach();
+	)
+).attach();
 
 SimpleTreeNode<String> singleNode = SimpleTreeNode("Single");
 
