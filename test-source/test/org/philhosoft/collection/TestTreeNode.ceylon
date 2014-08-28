@@ -1,7 +1,11 @@
 import org.philhosoft.collection { ... }
 import ceylon.test { test, assertTrue, assertFalse, assertNull, assertEquals }
 
-test void testEmptyTreeNode()
+// Restrict scope of tests
+class TestTreeNode()
+{
+
+shared test void testEmptyTreeNode()
 {
 	value node = SimpleTreeNode<String>();
 
@@ -11,7 +15,7 @@ test void testEmptyTreeNode()
 	assertTrue(node.isLeaf);
 }
 
-test void testSingleNodeTree()
+shared test void testSingleNodeTree()
 {
 	value node = SimpleTreeNode<String>("Root");
 
@@ -21,7 +25,7 @@ test void testSingleNodeTree()
 	assertTrue(node.isLeaf);
 }
 
-test void testSimpleTree()
+shared test void testSimpleTree()
 {
 	value nodeA = SimpleTreeNode("A");
 	value nodeB = SimpleTreeNode("B");
@@ -36,7 +40,7 @@ test void testSimpleTree()
 	assertEquals(root, nodeB.parent);
 }
 
-test void testLessSimpleTree()
+shared test void testLessSimpleTree()
 {
 	value nodeC = SimpleTreeNode("A C");
 	value nodeD = SimpleTreeNode("A D");
@@ -63,55 +67,58 @@ test void testLessSimpleTree()
 	assertEquals(nodeB, nodeE.parent);
 }
 
-test void testDetachAttach()
+shared test void testDetachAttach()
 {
 	SimpleTreeNode<String> root = SimpleTreeNode("Root",
-		SimpleTreeNode("A",
-			SimpleTreeNode("a C",
-				SimpleTreeNode("c F"),
-				SimpleTreeNode("c G")
-				),
-			SimpleTreeNode("a D")
+		SimpleTreeNode("Left Branch",
+			SimpleTreeNode("One",
+				SimpleTreeNode("Low 1"),
+				SimpleTreeNode("Low 2")
+			),
+			SimpleTreeNode("Two")
 		),
-		SimpleTreeNode("B",
-			SimpleTreeNode("b E",
-				SimpleTreeNode("e H")
+		SimpleTreeNode("Right Branch",
+			SimpleTreeNode("Down",
+				SimpleTreeNode("Lower")
 			)
 		)
 	).attach();
 
-	value tt = treeTraversal.preOrderTraversal(root); // From treeTraversal.ceylon
-	value result1 = [ for (tn in tt) tn.element ];
-	assertEquals(result1, [ "Root", "A", "a C", "c F", "c G", "a D", "B", "b E", "e H" ]);
+	value tf = TreeFormatter<String>();
+	value result1 = tf.formatAsNewick(root);
+	assertEquals(result1, "(((Low 1,Low 2)One,Two)Left Branch,((Lower)Down)Right Branch)Root");
 
 	if (exists a = root.children.first, exists ac = a.children.first)
 	{
-		assertEquals("a C", ac.element);
+		assertEquals("One", ac.element);
 		ac.removeFromParent();
-		if (exists b = root.children.getFromFirst(1), exists be = b.children.first)
+		if (exists b = root.children.getFromFirst(1), exists bd = b.children.first)
 		{
-			assertEquals("b E", be.element);
-			ac.attachTo(be);
+			assertEquals("Down", bd.element);
+			ac.attachTo(bd);
 		}
 	}
 
-	value result2 = [ for (tn in tt) tn.element ];
-	assertEquals(result2, [ "Root", "A", "a D", "B", "b E", "e H", "a C", "c F", "c G" ]);
+	value result2 = tf.formatAsNewick(root);
+	assertEquals(result2, "((Two)Left Branch,((Lower,(Low 1,Low 2)One)Down)Right Branch)Root");
 
-	if (exists b = root.children.getFromFirst(1), exists be = b.children.first)
+	if (exists b = root.children.getFromFirst(1), exists bd = b.children.first)
 	{
-		assertEquals("b E", be.element);
+		assertEquals("Down", bd.element);
 
-		value newNode = SimpleTreeNode("b I");
+		value newNode = SimpleTreeNode("Another");
 		newNode.attachTo(b);
 		assertEquals(b.children.size, 2);
 
 		if (exists a = root.children.first)
 		{
-			be.attachTo(a);
+			bd.attachTo(a);
 		}
 	}
 
-	value result3 = [ for (tn in tt) tn.element ];
-	assertEquals(result3, [ "Root", "A", "a D", "b E", "e H", "a C", "c F", "c G", "B", "b I" ]);
+	value result3 = tf.formatAsNewick(root);
+	assertEquals(result3, "((Two,(Lower,(Low 1,Low 2)One)Down)Left Branch,(Another)Right Branch)Root");
 }
+
+}
+

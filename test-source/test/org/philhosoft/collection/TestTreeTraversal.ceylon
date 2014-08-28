@@ -1,11 +1,10 @@
 import org.philhosoft.collection { ... }
 import ceylon.test { test, assertEquals }
 
-TreeTraversal<TreeNode<String>> treeTraversal = TreeTraversal<TreeNode<String>>(TreeNode<String>.children);
-
 // Restrict scope of tests
 class TestTreeTraversal()
 {
+
 SimpleTreeNode<String> root = SimpleTreeNode("Root",
 	SimpleTreeNode("A",
 		SimpleTreeNode("a C",
@@ -22,6 +21,8 @@ SimpleTreeNode<String> root = SimpleTreeNode("Root",
 ).attach();
 
 SimpleTreeNode<String> singleNode = SimpleTreeNode("Single");
+
+TreeTraversal<TreeNode<String>> treeTraversal = TreeTraversal<TreeNode<String>>(TreeNode<String>.children);
 
 shared test void testSingleNodeTreeTraversalPreOrder()
 {

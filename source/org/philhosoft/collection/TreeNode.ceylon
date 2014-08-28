@@ -1,5 +1,3 @@
-import ceylon.collection { MutableList }
-
 "A node in a tree, holding a value, an element."
 shared interface TreeNode<Element>
 {
