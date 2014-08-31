@@ -5,80 +5,117 @@ import ceylon.collection
 	LinkedList
 }
 
-shared class TreeFormatter<Element>(String(Element?) asString = (Element? e) => e?.string else "")
-		given Element satisfies Object
+shared String formatAsNewick<Element>(TreeNode<Element> root,
+		String(Element?) asString = (Element? e) => e?.string else "")
 {
-	shared String formatAsNewick(TreeNode<Element> root)
+	class PostOrderIteration(TreeNode<Element> root)
 	{
-		class PostOrderIteration(TreeNode<Element> root)
+		function wrap(TreeNode<Element> node)
 		{
-			function wrap(TreeNode<Element> node)
-			{
-				return [ node, node.children.iterator() ];
-			}
+			return [ node, node.children.iterator() ];
+		}
 
-			Stack<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]> stack = LinkedList<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]>();
-			stack.push(wrap(root));
+		Stack<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]> stack = LinkedList<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]>();
+		stack.push(wrap(root));
 
-			shared void iterate(StringBuilder sb)
+		shared void iterate(StringBuilder sb)
+		{
+			variable Boolean firstAtLevel = true;
+			while (exists top = stack.top)
 			{
-				variable Boolean firstAtLevel = true;
-				while (exists top = stack.top)
+				TreeNode<Element> | Finished child = top[1].next();
+				if (is TreeNode<Element> child)
 				{
-					TreeNode<Element> | Finished child = top[1].next();
-					if (is TreeNode<Element> child)
+					// Add this child for further processing
+					if (child.isLeaf)
 					{
-						// Add this child for further processing
-						if (child.isLeaf)
+						if (firstAtLevel)
 						{
-							if (firstAtLevel)
-							{
-								sb.append("(");
-								firstAtLevel = false;
-							}
-							else
-							{
-								sb.append(",");
-							}
-							sb.append(asString(child.element));
+							sb.append("(");
+							firstAtLevel = false;
 						}
 						else
 						{
-							if (firstAtLevel)
-							{
-								sb.append("(");
-							}
-							else
-							{
-								sb.append(",");
-							}
-							stack.push(wrap(child));
-							firstAtLevel = true;
+							sb.append(",");
 						}
+						sb.append(asString(child.element));
 					}
 					else
 					{
-						// Exhausted iterator, get rid of it
-						stack.pop();
-						if (firstAtLevel) // We get an empty tree
+						if (firstAtLevel)
 						{
 							sb.append("(");
 						}
-						sb.append(")");
-						// And we add the parent
-						if (exists e = top[0].element)
+						else
 						{
-							sb.append(asString(e));
+							sb.append(",");
 						}
+						stack.push(wrap(child));
+						firstAtLevel = true;
+					}
+				}
+				else
+				{
+					// Exhausted iterator, get rid of it
+					stack.pop();
+					if (firstAtLevel) // We get an empty tree
+					{
+						sb.append("(");
+					}
+					sb.append(")");
+					// And we add the parent
+					if (exists e = top[0].element)
+					{
+						sb.append(asString(e));
 					}
 				}
 			}
 		}
-
-		value ppi = PostOrderIteration(root);
-		value sb = StringBuilder();
-		ppi.iterate(sb);
-
-		return sb.string;
 	}
+
+	value ppi = PostOrderIteration(root);
+	value sb = StringBuilder();
+	ppi.iterate(sb);
+
+	return sb.string;
+}
+
+shared String formatAsIndentedLines<Element>(TreeNode<Element> root, Character indentingCharacter = '\t',
+		String(Element?) asString = (Element? e) => e?.string else "")
+{
+	Stack<[ Integer, Iterator<TreeNode<Element>> ]> stack = LinkedList<[ Integer, Iterator<TreeNode<Element>> ]>();
+	stack.push([ 0, Singleton(root).iterator() ]);
+
+	class PreOrderIteration(TreeNode<Element> root)
+	{
+		String indentation(Integer level) => String([ indentingCharacter ].repeat(level));
+
+		shared void iterate(StringBuilder sb)
+		{
+			while (exists top = stack.top)
+			{
+				TreeNode<Element> | Finished node = top[1].next();
+				if (is TreeNode<Element> node)
+				{
+					// Found a new node, add an iterator on its children to the stack, for further processing.
+					Iterator<TreeNode<Element>> childrenIterator = node.children.iterator();
+					stack.push([ top[0] + 1, childrenIterator ]);
+					// And give the found node.
+					sb.append(indentation(top[0])).append(asString(node.element)).append("\n");
+				}
+				else
+				{
+					// This iterator is exhausted...
+					stack.pop();
+					// try the next one in the loop
+				}
+			}
+		}
+	}
+
+	value ppi = PreOrderIteration(root);
+	value sb = StringBuilder();
+	ppi.iterate(sb);
+
+	return sb.string;
 }
