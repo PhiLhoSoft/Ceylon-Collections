@@ -1,5 +1,6 @@
-import org.philhosoft.collection { ... }
 import ceylon.test { test, assertTrue, assertFalse, assertNull, assertEquals }
+import org.philhosoft.collection.tree { SimpleTreeNode, formatAsNewick,
+	formatAsIndentedLines }
 
 class TestTreeNode()
 {
@@ -82,8 +83,19 @@ class TestTreeNode()
 			)
 		).attach();
 
-		value result1 = formatAsNewick(root);
-		assertEquals(result1, "(((Low 1,Low 2)One,Two)Left Branch,((Lower)Down)Right Branch)Root");
+		value result1N = formatAsNewick(root);
+		assertEquals(result1N, "(((Low 1,Low 2)One,Two)Left Branch,((Lower)Down)Right Branch)Root");
+		value result1I = formatAsIndentedLines(root, "*");
+		assertEquals(result1I, "Root
+		                        #Left Branch
+		                        ##One
+		                        ###Low 1
+		                        ###Low 2
+		                        ##Two
+		                        #Right Branch
+		                        ##Down
+		                        ###Lower
+		                        ");
 
 		if (exists a = root.children.first, exists ac = a.children.first)
 		{
@@ -96,8 +108,19 @@ class TestTreeNode()
 			}
 		}
 
-		value result2 = formatAsNewick(root);
-		assertEquals(result2, "((Two)Left Branch,((Lower,(Low 1,Low 2)One)Down)Right Branch)Root");
+		value result2N = formatAsNewick(root);
+		assertEquals(result2N, "((Two)Left Branch,((Lower,(Low 1,Low 2)One)Down)Right Branch)Root");
+		value result2I = formatAsIndentedLines(root, "*");
+		assertEquals(result2I, "Root
+		                        #Left Branch
+		                        ##Two
+		                        #Right Branch
+		                        ##Down
+		                        ###Lower
+		                        ###One
+		                        ####Low 1
+		                        ####Low 2
+		                        ");
 
 		if (exists b = root.children.getFromFirst(1), exists bd = b.children.first)
 		{
@@ -113,8 +136,19 @@ class TestTreeNode()
 			}
 		}
 
-		value result3 = formatAsNewick(root);
-		assertEquals(result3, "((Two,(Lower,(Low 1,Low 2)One)Down)Left Branch,(Another)Right Branch)Root");
+		value result3N = formatAsNewick(root);
+		assertEquals(result3N, "((Two,(Lower,(Low 1,Low 2)One)Down)Left Branch,(Another)Right Branch)Root");
+		value result3I = formatAsIndentedLines(root, "*");
+		assertEquals(result3I, "Root
+		                        #Left Branch
+		                        ##Two
+		                        ##Down
+		                        ###Lower
+		                        ###One
+		                        ####Low 1
+		                        ####Low 2
+		                        #Right Branch
+		                        ##Another
+		                        ");
 	}
-	}
-
+}

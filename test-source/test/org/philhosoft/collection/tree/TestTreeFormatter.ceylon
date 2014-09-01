@@ -1,5 +1,5 @@
-import org.philhosoft.collection { ... }
 import ceylon.test { test, assertEquals }
+import org.philhosoft.collection.tree { SimpleTreeNode, formatAsNewick, formatAsIndentedLines }
 
 class TestTreeFormatter()
 {
@@ -46,7 +46,7 @@ class TestTreeFormatter()
 
 	shared test void testFormatSimpleTree_indented()
 	{
-		value result = formatAsIndentedLines(getSimpleTree(), '*');
+		value result = formatAsIndentedLines(getSimpleTree(), "*");
 		assertEquals(result, "Root
 		                      *A
 		                      *B
@@ -63,7 +63,7 @@ class TestTreeFormatter()
 
 	shared test void testFormatLinearTree_indented()
 	{
-		value result = formatAsIndentedLines(getLinearTree(), '*');
+		value result = formatAsIndentedLines(getLinearTree(), "*");
 		assertEquals(result, "Root
 		                      *A
 		                      **B
@@ -90,13 +90,37 @@ class TestTreeFormatter()
 
 	shared test void testFormatLessSimpleTree_indented()
 	{
-		value result = formatAsIndentedLines(getLessSimpleTree(), '*');
+		value result = formatAsIndentedLines(getLessSimpleTree(), "*");
 		assertEquals(result, "Root
 		                      *A
 		                      **A C
 		                      **A D
 		                      *B
 		                      **B E
+		                      ");
+	}
+
+	shared test void testFormatLessSimpleTree_default()
+	{
+		value result = formatAsIndentedLines(getLessSimpleTree());
+		assertEquals(result, "Root
+		                      \tA
+		                      \t\tA C
+		                      \t\tA D
+		                      \tB
+		                      \t\tB E
+		                      ");
+	}
+
+	shared test void testFormatLessSimpleTree_multichar()
+	{
+		value result = formatAsIndentedLines(getLessSimpleTree(), "=> ");
+		assertEquals(result, "Root
+		                      => A
+		                      => => A C
+		                      => => A D
+		                      => B
+		                      => => B E
 		                      ");
 	}
 
@@ -125,7 +149,7 @@ class TestTreeFormatter()
 
 	shared test void testFormatLastTree_indented()
 	{
-		value result = formatAsIndentedLines(getLastTree(), '*');
+		value result = formatAsIndentedLines(getLastTree(), "*");
 		assertEquals(result, "Root
 		                      *A
 		                      **a C
@@ -138,36 +162,62 @@ class TestTreeFormatter()
 		                      ");
 	}
 
-	// TODO Should be inside the test function but moved there because it throws an error when running.
-	// See https://github.com/ceylon/ceylon-runtime/issues/69
 	class Custom(shared Integer n, shared Float whatever) { string => "Custom{``n``, ``whatever``}"; }
 	String customAsString(Custom? c) => c?.n?.string else "?";
 
-	shared test void testFormatCustomElement()
+	SimpleTreeNode<Custom> getCustomTree() =>
+			SimpleTreeNode(Custom(1, 1.0),
+				SimpleTreeNode(Custom(2, 2.1),
+					SimpleTreeNode(Custom(5, 3.1),
+						SimpleTreeNode(Custom(8, 4.1)),
+						SimpleTreeNode(Custom(9, 4.2))
+					),
+					SimpleTreeNode(Custom(6, 3.2))
+				),
+				SimpleTreeNode(Custom(3, 2.2),
+					SimpleTreeNode(Custom(7, 3.3),
+						SimpleTreeNode(Custom(10, 4.3))
+					)
+				),
+				SimpleTreeNode(Custom(4, 2.2), SimpleTreeNode<Custom>())
+			).attach();
+
+	shared test void testFormatCustomElement_Newick()
 	{
 		SimpleTreeNode<Custom> rootS = SimpleTreeNode(Custom(1, 5.0),
 			SimpleTreeNode(Custom(2, 5.1)), SimpleTreeNode(Custom(3, 5.2))
 		).attach();
 
-		SimpleTreeNode<Custom> rootC = SimpleTreeNode(Custom(1, 1.0),
-			SimpleTreeNode(Custom(2, 2.1),
-				SimpleTreeNode(Custom(5, 3.1),
-					SimpleTreeNode(Custom(8, 4.1)),
-					SimpleTreeNode(Custom(9, 4.2))
-				),
-				SimpleTreeNode(Custom(6, 3.2))
-			),
-			SimpleTreeNode(Custom(3, 2.2),
-				SimpleTreeNode(Custom(7, 3.3),
-					SimpleTreeNode(Custom(10, 4.3))
-				)
-			),
-			SimpleTreeNode(Custom(4, 2.2), SimpleTreeNode<Custom>())
-		).attach();
-
 		value resultS = formatAsNewick(rootS, customAsString);
 		assertEquals(resultS, "(2,3)1");
-		value resultC = formatAsNewick(rootC, customAsString);
+		value resultC = formatAsNewick(getCustomTree(), customAsString);
 		assertEquals(resultC, "(((8,9)5,6)2,((10)7)3,(?)4)1");
+	}
+
+	shared test void testFormatCustomElement_indented()
+	{
+		SimpleTreeNode<Custom> rootS = SimpleTreeNode(Custom(1, 5.0),
+			SimpleTreeNode(Custom(2, 5.1)), SimpleTreeNode(Custom(3, 5.2))
+		).attach();
+
+		value resultS = formatAsIndentedLines(rootS, "#", customAsString);
+		assertEquals(resultS, "1
+		                       #2
+		                       #3
+		                       ");
+		value resultC = formatAsIndentedLines(getCustomTree(), "=> ", customAsString);
+		assertEquals(resultC,
+				"1
+				 => 2
+				 => => 5
+				 => => => 8
+				 => => => 9
+				 => => 6
+				 => 3
+				 => => 7
+				 => => => 10
+				 => 4
+				 => => ?
+				 ");
 	}
 }

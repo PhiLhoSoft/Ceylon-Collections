@@ -5,8 +5,10 @@ import ceylon.collection
 	LinkedList
 }
 
+String defaultAsString<Element>(Element? e) => e?.string else "";
+
 shared String formatAsNewick<Element>(TreeNode<Element> root,
-		String(Element?) asString = (Element? e) => e?.string else "")
+		String(Element?) asString = defaultAsString<Element>)
 {
 	class PostOrderIteration(TreeNode<Element> root)
 	{
@@ -80,15 +82,16 @@ shared String formatAsNewick<Element>(TreeNode<Element> root,
 	return sb.string;
 }
 
-shared String formatAsIndentedLines<Element>(TreeNode<Element> root, Character indentingCharacter = '\t',
-		String(Element?) asString = (Element? e) => e?.string else "")
+shared String formatAsIndentedLines<Element>(TreeNode<Element> root, String indentingUnit = "\t",
+		String(Element?) asString = defaultAsString<Element>)
 {
 	Stack<[ Integer, Iterator<TreeNode<Element>> ]> stack = LinkedList<[ Integer, Iterator<TreeNode<Element>> ]>();
 	stack.push([ 0, Singleton(root).iterator() ]);
 
 	class PreOrderIteration(TreeNode<Element> root)
 	{
-		String indentation(Integer level) => String([ indentingCharacter ].repeat(level));
+		// TODO memoize results
+		String indentation(Integer level) => [ indentingUnit ].repeat(level).reduce((String partial, String element) => partial + element) else "";
 
 		shared void iterate(StringBuilder sb)
 		{

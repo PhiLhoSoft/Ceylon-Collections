@@ -1,5 +1,5 @@
-import org.philhosoft.collection { ... }
 import ceylon.test { test, assertEquals }
+import org.philhosoft.collection.tree { TreeNode, SimpleTreeNode, TreeTraversal }
 
 class TestTreeTraversal()
 {

@@ -1,4 +1,5 @@
 import ceylon.collection { LinkedList, MutableList }
+import org.philhosoft.collection.tree { TreeNode }
 
 shared class SimpleTreeNode<Element>(element = null, TreeNode<Element>* initialChildren)
 		satisfies TreeNode<Element>
