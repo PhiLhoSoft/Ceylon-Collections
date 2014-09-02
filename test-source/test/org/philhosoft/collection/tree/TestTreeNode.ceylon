@@ -85,7 +85,7 @@ class TestTreeNode()
 
 		value result1N = formatAsNewick(root);
 		assertEquals(result1N, "(((Low 1,Low 2)One,Two)Left Branch,((Lower)Down)Right Branch)Root");
-		value result1I = formatAsIndentedLines(root, "*");
+		value result1I = formatAsIndentedLines(root, "#");
 		assertEquals(result1I, "Root
 		                        #Left Branch
 		                        ##One
@@ -110,7 +110,7 @@ class TestTreeNode()
 
 		value result2N = formatAsNewick(root);
 		assertEquals(result2N, "((Two)Left Branch,((Lower,(Low 1,Low 2)One)Down)Right Branch)Root");
-		value result2I = formatAsIndentedLines(root, "*");
+		value result2I = formatAsIndentedLines(root, "#");
 		assertEquals(result2I, "Root
 		                        #Left Branch
 		                        ##Two
@@ -151,4 +151,37 @@ class TestTreeNode()
 		                        ##Another
 		                        ");
 	}
+
+	interface Custom
+	{
+		shared formal String name;
+	}
+	class CustomA(String n) satisfies Custom
+	{
+		name => n;
+	}
+	class CustomB(String n, String m) satisfies Custom
+	{
+		name => n + " " + m;
+	}
+
+/* TODO
+	shared test void testCustomElement()
+	{
+		SimpleTreeNode<Custom> root = SimpleTreeNode(CustomA("Root"),
+			SimpleTreeNode(CustomB("Left", "Branch"),
+				SimpleTreeNode(CustomA("One"),
+					SimpleTreeNode(CustomB("Low", "1")),
+					SimpleTreeNode(CustomB("Low", "2"))
+				),
+				SimpleTreeNode(CustomA("Two"))
+			),
+			SimpleTreeNode(CustomB("Right", "Branch"),
+				SimpleTreeNode(CustomA("Down"),
+					SimpleTreeNode(CustomA("Lower"))
+				)
+			)
+		).attach();
+	}
+*/
 }

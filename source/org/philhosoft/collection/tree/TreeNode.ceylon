@@ -8,7 +8,7 @@ shared interface TreeNode<Element>
 	shared formal variable TreeNode<Element>? parent;
 
 	"The children below this node. Empty on a leaf."
-	shared formal Iterable<TreeNode<Element>> children;
+	shared formal Collection<TreeNode<Element>> children;
 
 	"Returns `true` if this node has no children."
 	shared formal Boolean isLeaf;
