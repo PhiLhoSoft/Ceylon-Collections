@@ -1,12 +1,15 @@
 import ceylon.test { test, assertTrue, assertFalse, assertNull, assertEquals }
-import org.philhosoft.collection.tree { SimpleTreeNode, formatAsNewick,
+import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick,
 	formatAsIndentedLines }
+import ceylon.collection {
+	LinkedList
+}
 
 class TestTreeNode()
 {
 	shared test void testEmptyTreeNode()
 	{
-		value node = SimpleTreeNode<String>();
+		value node = MutableTreeNode<String>();
 
 		assertNull(node.element);
 		assertNull(node.parent);
@@ -16,7 +19,7 @@ class TestTreeNode()
 
 	shared test void testSingleNodeTree()
 	{
-		value node = SimpleTreeNode<String>("Root");
+		value node = MutableTreeNode<String>("Root");
 
 		assertEquals(node.element, "Root");
 		assertNull(node.parent);
@@ -26,9 +29,9 @@ class TestTreeNode()
 
 	shared test void testSimpleTree()
 	{
-		value nodeA = SimpleTreeNode("A");
-		value nodeB = SimpleTreeNode("B");
-		value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
+		value nodeA = MutableTreeNode("A");
+		value nodeB = MutableTreeNode("B");
+		value root = MutableTreeNode("Root", nodeA, nodeB).attach();
 
 		assertFalse(root.isLeaf);
 		assertTrue(nodeA.isLeaf);
@@ -41,12 +44,12 @@ class TestTreeNode()
 
 	shared test void testLessSimpleTree()
 	{
-		value nodeC = SimpleTreeNode("A C");
-		value nodeD = SimpleTreeNode("A D");
-		value nodeE = SimpleTreeNode("B E");
-		value nodeA = SimpleTreeNode("A", nodeC, nodeD);
-		value nodeB = SimpleTreeNode("B", nodeE);
-		value root = SimpleTreeNode("Root", nodeA, nodeB).attach();
+		value nodeC = MutableTreeNode("A C");
+		value nodeD = MutableTreeNode("A D");
+		value nodeE = MutableTreeNode("B E");
+		value nodeA = MutableTreeNode("A", nodeC, nodeD);
+		value nodeB = MutableTreeNode("B", nodeE);
+		value root = MutableTreeNode("Root", nodeA, nodeB).attach();
 
 		assertFalse(root.isLeaf);
 		assertFalse(nodeA.isLeaf);
@@ -68,17 +71,17 @@ class TestTreeNode()
 
 	shared test void testDetachAttach()
 	{
-		SimpleTreeNode<String> root = SimpleTreeNode("Root",
-			SimpleTreeNode("Left Branch",
-				SimpleTreeNode("One",
-					SimpleTreeNode("Low 1"),
-					SimpleTreeNode("Low 2")
+		MutableTreeNode<String> root = MutableTreeNode("Root",
+			MutableTreeNode("Left Branch",
+				MutableTreeNode("One",
+					MutableTreeNode("Low 1"),
+					MutableTreeNode("Low 2")
 				),
-				SimpleTreeNode("Two")
+				MutableTreeNode("Two")
 			),
-			SimpleTreeNode("Right Branch",
-				SimpleTreeNode("Down",
-					SimpleTreeNode("Lower")
+			MutableTreeNode("Right Branch",
+				MutableTreeNode("Down",
+					MutableTreeNode("Lower")
 				)
 			)
 		).attach();
@@ -126,7 +129,7 @@ class TestTreeNode()
 		{
 			assertEquals("Down", bd.element);
 
-			value newNode = SimpleTreeNode("Another");
+			value newNode = MutableTreeNode("Another");
 			newNode.attachTo(b);
 			assertEquals(b.children.size, 2);
 
@@ -138,7 +141,7 @@ class TestTreeNode()
 
 		value result3N = formatAsNewick(root);
 		assertEquals(result3N, "((Two,(Lower,(Low 1,Low 2)One)Down)Left Branch,(Another)Right Branch)Root");
-		value result3I = formatAsIndentedLines(root, "*");
+		value result3I = formatAsIndentedLines(root, "#");
 		assertEquals(result3I, "Root
 		                        #Left Branch
 		                        ##Two
@@ -165,23 +168,25 @@ class TestTreeNode()
 		name => n + " " + m;
 	}
 
-/* TODO
+//* TODO
 	shared test void testCustomElement()
 	{
-		SimpleTreeNode<Custom> root = SimpleTreeNode(CustomA("Root"),
-			SimpleTreeNode(CustomB("Left", "Branch"),
-				SimpleTreeNode(CustomA("One"),
-					SimpleTreeNode(CustomB("Low", "1")),
-					SimpleTreeNode(CustomB("Low", "2"))
+		List<Custom> lc = LinkedList<Custom>({ CustomA("foo"), CustomB("gah", "buh") });
+
+		MutableTreeNode<out Custom> root = MutableTreeNode(CustomA("Root"),
+			MutableTreeNode(CustomB("Left", "Branch"),
+				MutableTreeNode(CustomA("One"),
+					MutableTreeNode(CustomB("Low", "1")),
+					MutableTreeNode(CustomB("Low", "2"))
 				),
-				SimpleTreeNode(CustomA("Two"))
+				MutableTreeNode(CustomA("Two"))
 			),
-			SimpleTreeNode(CustomB("Right", "Branch"),
-				SimpleTreeNode(CustomA("Down"),
-					SimpleTreeNode(CustomA("Lower"))
+			MutableTreeNode(CustomB("Right", "Branch"),
+				MutableTreeNode(CustomA("Down"),
+					MutableTreeNode(CustomA("Lower"))
 				)
 			)
 		).attach();
 	}
-*/
+//*/
 }

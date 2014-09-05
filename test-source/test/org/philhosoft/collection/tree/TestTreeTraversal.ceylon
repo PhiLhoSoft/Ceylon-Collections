@@ -1,26 +1,26 @@
 import ceylon.test { test, assertEquals }
-import org.philhosoft.collection.tree { TreeNode, SimpleTreeNode, TreeTraversal }
+import org.philhosoft.collection.tree { TreeNode, MutableTreeNode, TreeTraversal }
 
 class TestTreeTraversal()
 {
-	SimpleTreeNode<String> root = SimpleTreeNode("Root",
-		SimpleTreeNode("A",
-			SimpleTreeNode("a C",
-				SimpleTreeNode("c F"),
-				SimpleTreeNode("c G")
+	MutableTreeNode<String> root = MutableTreeNode("Root",
+		MutableTreeNode("A",
+			MutableTreeNode("a C",
+				MutableTreeNode("c F"),
+				MutableTreeNode("c G")
 				),
-			SimpleTreeNode("a D")
+			MutableTreeNode("a D")
 		),
-		SimpleTreeNode("B",
-			SimpleTreeNode("b E",
-				SimpleTreeNode("e H")
+		MutableTreeNode("B",
+			MutableTreeNode("b E",
+				MutableTreeNode("e H")
 			)
 		)
 	).attach();
 
-	SimpleTreeNode<String> singleNode = SimpleTreeNode("Single");
+	MutableTreeNode<String> singleNode = MutableTreeNode("Single");
 
-	TreeTraversal<TreeNode<String>> treeTraversal = TreeTraversal<TreeNode<String>>(TreeNode<String>.children);
+	TreeTraversal<MutableTreeNode<String>> treeTraversal = TreeTraversal<MutableTreeNode<String>>(MutableTreeNode<String>.children);
 
 	shared test void testSingleNodeTreeTraversalPreOrder()
 	{

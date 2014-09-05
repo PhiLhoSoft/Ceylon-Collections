@@ -7,7 +7,7 @@ import ceylon.collection
 
 String defaultAsString<Element>(Element? e) => e?.string else "";
 
-shared String formatAsNewick<Element>(TreeNode<Element> root,
+shared String formatAsNewick<in Element>(TreeNode<Element> root,
 		String(Element?) asString = defaultAsString<Element>)
 {
 	class PostOrderIteration(TreeNode<Element> root)

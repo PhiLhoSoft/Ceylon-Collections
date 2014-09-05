@@ -1,23 +1,18 @@
 "A node in a tree, holding a value, an element."
-shared interface TreeNode<Element>
+shared interface TreeNode<out Element, out ActualTreeNode> of ActualTreeNode
+		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
 {
 	"The optional data attached to this node."
-	shared formal variable Element? element;
+	shared formal Element? element;
 
 	"The parent node. `null` at the tree root or if the node isn't attached to a parent."
-	shared formal variable TreeNode<Element>? parent;
+	shared formal ActualTreeNode? parent;
 
 	"The children below this node. Empty on a leaf."
-	shared formal Collection<TreeNode<Element>> children;
+	shared formal Collection<ActualTreeNode> children;
 
 	"Returns `true` if this node has no children."
 	shared formal Boolean isLeaf;
-
-	"Removes the current node from its parent, detaching it and its sub-tree from the current tree."
-	shared formal void removeFromParent();
-
-	"Attaches the current node (and its sub-tree) to a new parent."
-	shared formal void attachTo(TreeNode<Element> node);
 
 	//"Search for a given element, using the given tree transversal method. Returns null if not found."
 	// Might need to provide an equals method too, or to bound Element.

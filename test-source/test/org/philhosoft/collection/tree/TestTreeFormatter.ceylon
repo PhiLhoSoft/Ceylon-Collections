@@ -1,11 +1,11 @@
 import ceylon.test { test, assertEquals }
-import org.philhosoft.collection.tree { SimpleTreeNode, formatAsNewick, formatAsIndentedLines }
+import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines }
 
 class TestTreeFormatter()
 {
 	shared test void testFormatEmptyTreeNode_Newick()
 	{
-		value root = SimpleTreeNode<String>();
+		value root = MutableTreeNode<String>();
 
 		value result = formatAsNewick(root);
 		assertEquals(result, "()");
@@ -13,7 +13,7 @@ class TestTreeFormatter()
 
 	shared test void testFormatEmptyTreeNode_indented()
 	{
-		value root = SimpleTreeNode<String>();
+		value root = MutableTreeNode<String>();
 
 		value result = formatAsIndentedLines(root);
 		assertEquals(result, "\n");
@@ -21,7 +21,7 @@ class TestTreeFormatter()
 
 	shared test void testFormatSingleRoot_Newick()
 	{
-		value root = SimpleTreeNode<String>("Root");
+		value root = MutableTreeNode<String>("Root");
 
 		value result = formatAsNewick(root);
 		assertEquals(result, "()Root");
@@ -29,14 +29,14 @@ class TestTreeFormatter()
 
 	shared test void testFormatSingleRoot_indented()
 	{
-		value root = SimpleTreeNode<String>("Root");
+		value root = MutableTreeNode<String>("Root");
 
 		value result = formatAsIndentedLines(root);
 		assertEquals(result, "Root
 		                     ");
 	}
 
-	SimpleTreeNode<String> getSimpleTree() => SimpleTreeNode("Root", SimpleTreeNode("A"), SimpleTreeNode("B")).attach();
+	MutableTreeNode<String> getSimpleTree() => MutableTreeNode("Root", MutableTreeNode("A"), MutableTreeNode("B")).attach();
 
 	shared test void testFormatSimpleTree_Newick()
 	{
@@ -53,7 +53,7 @@ class TestTreeFormatter()
 		                      ");
 	}
 
-	SimpleTreeNode<String> getLinearTree() => SimpleTreeNode("Root", SimpleTreeNode("A", SimpleTreeNode("B", SimpleTreeNode("C")))).attach();
+	MutableTreeNode<String> getLinearTree() => MutableTreeNode("Root", MutableTreeNode("A", MutableTreeNode("B", MutableTreeNode("C")))).attach();
 
 	shared test void testFormatLinearTree_Newick()
 	{
@@ -71,14 +71,14 @@ class TestTreeFormatter()
 		                      ");
 	}
 
-	SimpleTreeNode<String> getLessSimpleTree() =>
-			SimpleTreeNode("Root",
-				SimpleTreeNode("A",
-					SimpleTreeNode("A C"),
-					SimpleTreeNode("A D")
+	MutableTreeNode<String> getLessSimpleTree() =>
+			MutableTreeNode("Root",
+				MutableTreeNode("A",
+					MutableTreeNode("A C"),
+					MutableTreeNode("A D")
 				),
-				SimpleTreeNode("B",
-					SimpleTreeNode("B E")
+				MutableTreeNode("B",
+					MutableTreeNode("B E")
 				)
 			).attach();
 
@@ -124,18 +124,18 @@ class TestTreeFormatter()
 		                      ");
 	}
 
-	SimpleTreeNode<String> getLastTree() =>
-		SimpleTreeNode("Root",
-			SimpleTreeNode("A",
-				SimpleTreeNode("a C",
-					SimpleTreeNode("c F"),
-					SimpleTreeNode("c G")
+	MutableTreeNode<String> getLastTree() =>
+		MutableTreeNode("Root",
+			MutableTreeNode("A",
+				MutableTreeNode("a C",
+					MutableTreeNode("c F"),
+					MutableTreeNode("c G")
 				),
-				SimpleTreeNode("a D")
+				MutableTreeNode("a D")
 			),
-			SimpleTreeNode("B",
-				SimpleTreeNode("b E",
-					SimpleTreeNode("e H")
+			MutableTreeNode("B",
+				MutableTreeNode("b E",
+					MutableTreeNode("e H")
 				)
 			)
 		).attach();
@@ -165,27 +165,27 @@ class TestTreeFormatter()
 	class Custom(shared Integer n, shared Float whatever) { string => "Custom{``n``, ``whatever``}"; }
 	String customAsString(Custom? c) => c?.n?.string else "?";
 
-	SimpleTreeNode<Custom> getCustomTree() =>
-			SimpleTreeNode(Custom(1, 1.0),
-				SimpleTreeNode(Custom(2, 2.1),
-					SimpleTreeNode(Custom(5, 3.1),
-						SimpleTreeNode(Custom(8, 4.1)),
-						SimpleTreeNode(Custom(9, 4.2))
+	MutableTreeNode<Custom> getCustomTree() =>
+			MutableTreeNode(Custom(1, 1.0),
+				MutableTreeNode(Custom(2, 2.1),
+					MutableTreeNode(Custom(5, 3.1),
+						MutableTreeNode(Custom(8, 4.1)),
+						MutableTreeNode(Custom(9, 4.2))
 					),
-					SimpleTreeNode(Custom(6, 3.2))
+					MutableTreeNode(Custom(6, 3.2))
 				),
-				SimpleTreeNode(Custom(3, 2.2),
-					SimpleTreeNode(Custom(7, 3.3),
-						SimpleTreeNode(Custom(10, 4.3))
+				MutableTreeNode(Custom(3, 2.2),
+					MutableTreeNode(Custom(7, 3.3),
+						MutableTreeNode(Custom(10, 4.3))
 					)
 				),
-				SimpleTreeNode(Custom(4, 2.2), SimpleTreeNode<Custom>())
+				MutableTreeNode(Custom(4, 2.2), MutableTreeNode<Custom>())
 			).attach();
 
 	shared test void testFormatCustomElement_Newick()
 	{
-		SimpleTreeNode<Custom> rootS = SimpleTreeNode(Custom(1, 5.0),
-			SimpleTreeNode(Custom(2, 5.1)), SimpleTreeNode(Custom(3, 5.2))
+		MutableTreeNode<Custom> rootS = MutableTreeNode(Custom(1, 5.0),
+			MutableTreeNode(Custom(2, 5.1)), MutableTreeNode(Custom(3, 5.2))
 		).attach();
 
 		value resultS = formatAsNewick(rootS, customAsString);
@@ -196,8 +196,8 @@ class TestTreeFormatter()
 
 	shared test void testFormatCustomElement_indented()
 	{
-		SimpleTreeNode<Custom> rootS = SimpleTreeNode(Custom(1, 5.0),
-			SimpleTreeNode(Custom(2, 5.1)), SimpleTreeNode(Custom(3, 5.2))
+		MutableTreeNode<Custom> rootS = MutableTreeNode(Custom(1, 5.0),
+			MutableTreeNode(Custom(2, 5.1)), MutableTreeNode(Custom(3, 5.2))
 		).attach();
 
 		value resultS = formatAsIndentedLines(rootS, "#", customAsString);
