@@ -7,17 +7,20 @@ import ceylon.collection
 
 String defaultAsString<Element>(Element? e) => e?.string else "";
 
-shared String formatAsNewick<in Element>(TreeNode<Element> root,
+shared String formatAsNewick<Element, ActualTreeNode>(ActualTreeNode root,
 		String(Element?) asString = defaultAsString<Element>)
+		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
 {
-	class PostOrderIteration(TreeNode<Element> root)
+	//alias Node => TreeNode<Element, ActualTreeNode>;
+
+	class PostOrderIteration(ActualTreeNode root)
 	{
-		function wrap(TreeNode<Element> node)
+		function wrap(ActualTreeNode node)
 		{
 			return [ node, node.children.iterator() ];
 		}
 
-		Stack<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]> stack = LinkedList<[ TreeNode<Element>, Iterator<TreeNode<Element>> ]>();
+		Stack<[ ActualTreeNode, Iterator<ActualTreeNode> ]> stack = LinkedList<[ ActualTreeNode, Iterator<ActualTreeNode> ]>();
 		stack.push(wrap(root));
 
 		shared void iterate(StringBuilder sb)
@@ -25,8 +28,8 @@ shared String formatAsNewick<in Element>(TreeNode<Element> root,
 			variable Boolean firstAtLevel = true;
 			while (exists top = stack.top)
 			{
-				TreeNode<Element> | Finished child = top[1].next();
-				if (is TreeNode<Element> child)
+				ActualTreeNode | Finished child = top[1].next();
+				if (is ActualTreeNode child)
 				{
 					// Add this child for further processing
 					if (child.isLeaf)
@@ -82,13 +85,16 @@ shared String formatAsNewick<in Element>(TreeNode<Element> root,
 	return sb.string;
 }
 
-shared String formatAsIndentedLines<Element>(TreeNode<Element> root, String indentingUnit = "\t",
-		String(Element?) asString = defaultAsString<Element>)
+shared String formatAsIndentedLines<Element, ActualTreeNode>(ActualTreeNode root, String indentingUnit = "\t",
+			String(Element?) asString = defaultAsString<Element>)
+		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
 {
-	Stack<[ Integer, Iterator<TreeNode<Element>> ]> stack = LinkedList<[ Integer, Iterator<TreeNode<Element>> ]>();
+	//alias Node => TreeNode<Element, ActualTreeNode>;
+
+	Stack<[ Integer, Iterator<ActualTreeNode> ]> stack = LinkedList<[ Integer, Iterator<ActualTreeNode> ]>();
 	stack.push([ 0, Singleton(root).iterator() ]);
 
-	class PreOrderIteration(TreeNode<Element> root)
+	class PreOrderIteration(ActualTreeNode root)
 	{
 		// TODO memoize results
 		String indentation(Integer level) => [ indentingUnit ].repeat(level).reduce((String partial, String element) => partial + element) else "";
@@ -97,11 +103,11 @@ shared String formatAsIndentedLines<Element>(TreeNode<Element> root, String inde
 		{
 			while (exists top = stack.top)
 			{
-				TreeNode<Element> | Finished node = top[1].next();
-				if (is TreeNode<Element> node)
+				ActualTreeNode | Finished node = top[1].next();
+				if (is ActualTreeNode node)
 				{
 					// Found a new node, add an iterator on its children to the stack, for further processing.
-					Iterator<TreeNode<Element>> childrenIterator = node.children.iterator();
+					Iterator<ActualTreeNode> childrenIterator = node.children.iterator();
 					stack.push([ top[0] + 1, childrenIterator ]);
 					// And give the found node.
 					sb.append(indentation(top[0])).append(asString(node.element)).append("\n");

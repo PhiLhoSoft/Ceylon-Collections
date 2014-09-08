@@ -1,5 +1,6 @@
 import ceylon.test { test, assertEquals }
-import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines }
+import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines,
+	TreeNode }
 
 class TestTreeFormatter()
 {
@@ -182,30 +183,65 @@ class TestTreeFormatter()
 				MutableTreeNode(Custom(4, 2.2), MutableTreeNode<Custom>())
 			).attach();
 
-	shared test void testFormatCustomElement_Newick()
+	shared test void testFormatCustomElement_simple_Newick()
 	{
 		MutableTreeNode<Custom> rootS = MutableTreeNode(Custom(1, 5.0),
 			MutableTreeNode(Custom(2, 5.1)), MutableTreeNode(Custom(3, 5.2))
 		).attach();
 
-		value resultS = formatAsNewick(rootS, customAsString);
+		value resultS = formatAsNewick<Custom, MutableTreeNode<Custom>>(rootS, customAsString);
 		assertEquals(resultS, "(2,3)1");
-		value resultC = formatAsNewick(getCustomTree(), customAsString);
+		value resultC = formatAsNewick<Custom, MutableTreeNode<Custom>>(getCustomTree(), customAsString);
 		assertEquals(resultC, "(((8,9)5,6)2,((10)7)3,(?)4)1");
 	}
 
-	shared test void testFormatCustomElement_indented()
+	shared test void testFormatCustomElement_simple_indented()
 	{
 		MutableTreeNode<Custom> rootS = MutableTreeNode(Custom(1, 5.0),
 			MutableTreeNode(Custom(2, 5.1)), MutableTreeNode(Custom(3, 5.2))
 		).attach();
 
-		value resultS = formatAsIndentedLines(rootS, "#", customAsString);
+		value resultS = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(rootS, "#", customAsString);
 		assertEquals(resultS, "1
 		                       #2
 		                       #3
 		                       ");
-		value resultC = formatAsIndentedLines(getCustomTree(), "=> ", customAsString);
+		value resultC = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(getCustomTree(), "=> ", customAsString);
+		assertEquals(resultC,
+				"1
+				 => 2
+				 => => 5
+				 => => => 8
+				 => => => 9
+				 => => 6
+				 => 3
+				 => => 7
+				 => => => 10
+				 => 4
+				 => => ?
+				 ");
+	}
+
+	shared test void testFormatCustomElement_comple_Newick()
+	{
+		MutableTreeNode<Custom> rootS = getCustomTree();
+
+		value resultS = formatAsNewick<Custom, MutableTreeNode<Custom>>(rootS, customAsString);
+		assertEquals(resultS, "(2,3)1");
+		value resultC = formatAsNewick<Custom, MutableTreeNode<Custom>>(getCustomTree(), customAsString);
+		assertEquals(resultC, "(((8,9)5,6)2,((10)7)3,(?)4)1");
+	}
+
+	shared test void testFormatCustomElement_complex_indented()
+	{
+		MutableTreeNode<Custom> rootS = getCustomTree();
+
+		value resultS = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(rootS, "#", customAsString);
+		assertEquals(resultS, "1
+		                       #2
+		                       #3
+		                       ");
+		value resultC = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(getCustomTree(), "=> ", customAsString);
 		assertEquals(resultC,
 				"1
 				 => 2

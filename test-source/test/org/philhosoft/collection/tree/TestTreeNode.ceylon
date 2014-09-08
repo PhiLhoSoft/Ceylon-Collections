@@ -162,31 +162,42 @@ class TestTreeNode()
 	class CustomA(String n) satisfies Custom
 	{
 		name => n;
+		string => name;
 	}
 	class CustomB(String n, String m) satisfies Custom
 	{
 		name => n + " " + m;
+		string => name;
 	}
 
-//* TODO
 	shared test void testCustomElement()
 	{
-		List<Custom> lc = LinkedList<Custom>({ CustomA("foo"), CustomB("gah", "buh") });
-
-		MutableTreeNode<out Custom> root = MutableTreeNode(CustomA("Root"),
-			MutableTreeNode(CustomB("Left", "Branch"),
-				MutableTreeNode(CustomA("One"),
-					MutableTreeNode(CustomB("Low", "1")),
-					MutableTreeNode(CustomB("Low", "2"))
+		MutableTreeNode<Custom> root = MutableTreeNode<Custom>(CustomA("Root"),
+			MutableTreeNode<Custom>(CustomB("Left", "Branch"),
+				MutableTreeNode<Custom>(CustomA("One"),
+					MutableTreeNode<Custom>(CustomB("Low", "1")),
+					MutableTreeNode<Custom>(CustomB("Low", "2"))
 				),
-				MutableTreeNode(CustomA("Two"))
+				MutableTreeNode<Custom>(CustomA("Two"))
 			),
-			MutableTreeNode(CustomB("Right", "Branch"),
-				MutableTreeNode(CustomA("Down"),
-					MutableTreeNode(CustomA("Lower"))
+			MutableTreeNode<Custom>(CustomB("Right", "Branch"),
+				MutableTreeNode<Custom>(CustomA("Down"),
+					MutableTreeNode<Custom>(CustomA("Lower"))
 				)
 			)
 		).attach();
+
+		value result = formatAsIndentedLines(root, "#");
+		assertEquals(result, "Root
+		                      #Left Branch
+		                      ##One
+		                      ###Low 1
+		                      ###Low 2
+		                      ##Two
+		                      #Right Branch
+		                      ##Down
+		                      ###Lower
+		                      ");
+
 	}
-//*/
 }

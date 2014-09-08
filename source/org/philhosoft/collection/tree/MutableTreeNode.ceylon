@@ -2,7 +2,7 @@ import ceylon.collection { LinkedList, MutableList }
 import org.philhosoft.collection.tree { TreeNode }
 
 shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* initialChildren)
-		satisfies TreeNode<Element, MutableTreeNode<Element>> & TreeNodeMutator<Element>
+		satisfies TreeNodeMutator<Element, MutableTreeNode<Element>>
 {
 	// Must be set after object construction. Bidirectional construction is hard / not possible.
 	// See https://groups.google.com/d/msg/ceylon-users/KkohG7kHI64/Io5uc3759WwJ
@@ -10,8 +10,8 @@ shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* 
 
 	MutableList<MutableTreeNode<Element>> childList = LinkedList(initialChildren);
 
-	shared actual MutableTreeNode<Element>? parent = mutableParent;
-	shared actual Collection<MutableTreeNode<Element>> children = childList;
+	shared actual MutableTreeNode<Element>? parent => mutableParent;
+	shared actual Collection<MutableTreeNode<Element>> children => childList;
 	shared actual Element? element;
 	shared actual Boolean isLeaf => children.empty;
 
@@ -25,14 +25,11 @@ shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* 
 		}
 	}
 
-	shared actual void attachTo(MutableTreeNode<Anything> newParent)
+	shared actual void attachTo(MutableTreeNode<Element> newParent)
 	{
-		if (is MutableTreeNode<Element> p = newParent)
-		{
-			removeFromParent();
-			// TODO assert that the given node isn't part of the tree below this node...
-			newParent.addChild(this);
-		}
+		removeFromParent();
+		// TODO assert that the given node isn't part of the tree below this node...
+		newParent.addChild(this);
 	}
 
 	string => "MutableTreeNode{``element else "(no element)"``, ``children.size`` children}";
@@ -78,8 +75,9 @@ shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* 
 	 //}
 }
 
-shared interface TreeNodeMutator<in Element>
-		satisfies TreeNode<Anything, TreeNodeMutator<Element>>
+shared interface TreeNodeMutator<in Element, ActualTreeNode> of ActualTreeNode
+		satisfies TreeNode<Anything, ActualTreeNode>
+		given ActualTreeNode satisfies TreeNodeMutator<Element, ActualTreeNode>
 {
 	shared formal void setElement(Element element);
 
@@ -87,5 +85,5 @@ shared interface TreeNodeMutator<in Element>
 	shared formal void removeFromParent();
 
 	"Attaches the current node (and its sub-tree) to a new parent."
-	shared formal void attachTo(MutableTreeNode<Anything> node);
+	shared formal void attachTo(ActualTreeNode node);
 }
