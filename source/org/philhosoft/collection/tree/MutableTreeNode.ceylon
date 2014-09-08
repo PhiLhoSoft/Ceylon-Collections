@@ -2,7 +2,7 @@ import ceylon.collection { LinkedList, MutableList }
 import org.philhosoft.collection.tree { TreeNode }
 
 shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* initialChildren)
-		satisfies TreeNodeMutator<Element, MutableTreeNode<Element>>
+		satisfies TreeNode<Element, MutableTreeNode<Element>> & TreeNodeMutator<Element, MutableTreeNode<Element>>
 {
 	// Must be set after object construction. Bidirectional construction is hard / not possible.
 	// See https://groups.google.com/d/msg/ceylon-users/KkohG7kHI64/Io5uc3759WwJ
@@ -75,8 +75,7 @@ shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* 
 	 //}
 }
 
-shared interface TreeNodeMutator<in Element, ActualTreeNode> of ActualTreeNode
-		satisfies TreeNode<Anything, ActualTreeNode>
+shared interface TreeNodeMutator<in Element, in ActualTreeNode> of ActualTreeNode
 		given ActualTreeNode satisfies TreeNodeMutator<Element, ActualTreeNode>
 {
 	shared formal void setElement(Element element);

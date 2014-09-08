@@ -189,9 +189,9 @@ class TestTreeFormatter()
 			MutableTreeNode(Custom(2, 5.1)), MutableTreeNode(Custom(3, 5.2))
 		).attach();
 
-		value resultS = formatAsNewick<Custom, MutableTreeNode<Custom>>(rootS, customAsString);
+		value resultS = formatAsNewick(rootS, customAsString);
 		assertEquals(resultS, "(2,3)1");
-		value resultC = formatAsNewick<Custom, MutableTreeNode<Custom>>(getCustomTree(), customAsString);
+		value resultC = formatAsNewick(getCustomTree(), customAsString);
 		assertEquals(resultC, "(((8,9)5,6)2,((10)7)3,(?)4)1");
 	}
 
@@ -201,12 +201,12 @@ class TestTreeFormatter()
 			MutableTreeNode(Custom(2, 5.1)), MutableTreeNode(Custom(3, 5.2))
 		).attach();
 
-		value resultS = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(rootS, "#", customAsString);
+		value resultS = formatAsIndentedLines(rootS, "#", customAsString);
 		assertEquals(resultS, "1
 		                       #2
 		                       #3
 		                       ");
-		value resultC = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(getCustomTree(), "=> ", customAsString);
+		value resultC = formatAsIndentedLines(getCustomTree(), "=> ", customAsString);
 		assertEquals(resultC,
 				"1
 				 => 2
@@ -226,9 +226,9 @@ class TestTreeFormatter()
 	{
 		MutableTreeNode<Custom> rootS = getCustomTree();
 
-		value resultS = formatAsNewick<Custom, MutableTreeNode<Custom>>(rootS, customAsString);
+		value resultS = formatAsNewick(rootS, customAsString);
 		assertEquals(resultS, "(2,3)1");
-		value resultC = formatAsNewick<Custom, MutableTreeNode<Custom>>(getCustomTree(), customAsString);
+		value resultC = formatAsNewick(getCustomTree(), customAsString);
 		assertEquals(resultC, "(((8,9)5,6)2,((10)7)3,(?)4)1");
 	}
 
@@ -236,12 +236,12 @@ class TestTreeFormatter()
 	{
 		MutableTreeNode<Custom> rootS = getCustomTree();
 
-		value resultS = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(rootS, "#", customAsString);
+		value resultS = formatAsIndentedLines(rootS, "#", customAsString);
 		assertEquals(resultS, "1
 		                       #2
 		                       #3
 		                       ");
-		value resultC = formatAsIndentedLines<Custom, MutableTreeNode<Custom>>(getCustomTree(), "=> ", customAsString);
+		value resultC = formatAsIndentedLines(getCustomTree(), "=> ", customAsString);
 		assertEquals(resultC,
 				"1
 				 => 2
