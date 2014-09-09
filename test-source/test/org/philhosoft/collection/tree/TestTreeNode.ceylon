@@ -1,9 +1,5 @@
 import ceylon.test { test, assertTrue, assertFalse, assertNull, assertEquals }
-import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick,
-	formatAsIndentedLines }
-import ceylon.collection {
-	LinkedList
-}
+import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines }
 
 class TestTreeNode()
 {

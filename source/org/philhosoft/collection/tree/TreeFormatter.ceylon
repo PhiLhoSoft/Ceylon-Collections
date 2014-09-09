@@ -11,8 +11,6 @@ shared String formatAsNewick<Element, ActualTreeNode>(ActualTreeNode root,
 		String(Element?) asString = defaultAsString<Element>)
 		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
 {
-	//alias Node => TreeNode<Element, ActualTreeNode>;
-
 	class PostOrderIteration(ActualTreeNode root)
 	{
 		function wrap(ActualTreeNode node)
@@ -89,15 +87,30 @@ shared String formatAsIndentedLines<Element, ActualTreeNode>(ActualTreeNode root
 			String(Element?) asString = defaultAsString<Element>)
 		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
 {
-	//alias Node => TreeNode<Element, ActualTreeNode>;
-
 	Stack<[ Integer, Iterator<ActualTreeNode> ]> stack = LinkedList<[ Integer, Iterator<ActualTreeNode> ]>();
 	stack.push([ 0, Singleton(root).iterator() ]);
 
 	class PreOrderIteration(ActualTreeNode root)
 	{
-		// TODO memoize results
-		String indentation(Integer level) => [ indentingUnit ].repeat(level).reduce((String partial, String element) => partial + element) else "";
+		// Memoization of results
+		variable String maxIndentation = indentingUnit;
+		String indentation_(Integer level) => [ indentingUnit ].repeat(level).reduce((String partial, String element) => partial + element) else "";
+		String indentation(Integer level)
+		{
+			Integer currentMax = maxIndentation.size / indentingUnit.size;
+			if (level <= currentMax)
+			{
+				return maxIndentation[0 : (level * indentingUnit.size)];
+			}
+			if (level == currentMax + 1) // The most common case here
+			{
+				maxIndentation += indentingUnit;
+				return maxIndentation;
+			}
+			// Should never be called here, but just in case...
+			maxIndentation = indentation_(level);
+			return maxIndentation;
+		}
 
 		shared void iterate(StringBuilder sb)
 		{
