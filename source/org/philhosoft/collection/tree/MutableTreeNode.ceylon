@@ -15,8 +15,6 @@ shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* 
 	shared actual Element? element;
 	shared actual Boolean isLeaf => children.empty;
 
-	shared actual void setElement(Element element) {}
-
 	shared actual void removeFromParent()
 	{
 		if (exists p = mutableParent)
@@ -78,8 +76,6 @@ shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* 
 shared interface TreeNodeMutator<in Element, in ActualTreeNode> of ActualTreeNode
 		given ActualTreeNode satisfies TreeNodeMutator<Element, ActualTreeNode>
 {
-	shared formal void setElement(Element element);
-
 	"Removes the current node from its parent, detaching it and its sub-tree from the current tree."
 	shared formal void removeFromParent();
 
