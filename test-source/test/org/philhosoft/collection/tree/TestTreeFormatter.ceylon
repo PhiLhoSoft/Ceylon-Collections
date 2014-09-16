@@ -1,5 +1,6 @@
 import ceylon.test { test, assertEquals }
-import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines }
+import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines,
+	formatAsDot }
 
 class TestTreeFormatter()
 {
@@ -27,6 +28,18 @@ class TestTreeFormatter()
 		assertEquals(result, "()Root");
 	}
 
+	shared test void testFormatEmptyTree_dot()
+	{
+		value root = MutableTreeNode<String>();
+
+		value result = formatAsDot(root);
+		assertEquals(result,
+			"""digraph G
+			   {
+			   }""");
+	}
+
+
 	shared test void testFormatSingleRoot_indented()
 	{
 		value root = MutableTreeNode<String>("Root");
@@ -35,6 +48,19 @@ class TestTreeFormatter()
 		assertEquals(result, "Root
 		                     ");
 	}
+
+	shared test void testFormatSingleRoot_dot()
+	{
+		value root = MutableTreeNode<String>("Root");
+
+		value result = formatAsDot(root);
+		assertEquals(result,
+			"""digraph G
+			   {
+			   "Root"
+			   }""");
+	}
+
 
 	MutableTreeNode<String> getSimpleTree() => MutableTreeNode("Root", MutableTreeNode("A"), MutableTreeNode("B")).attach();
 
@@ -53,6 +79,18 @@ class TestTreeFormatter()
 		                      ");
 	}
 
+	shared test void testFormatSimpleTree_dot()
+	{
+		value result = formatAsDot(getSimpleTree());
+		assertEquals(result,
+			"""digraph G
+			   {
+			   "Root" -> "A"
+			   "Root" -> "B"
+			   }""");
+	}
+
+
 	MutableTreeNode<String> getLinearTree() => MutableTreeNode("Root", MutableTreeNode("A", MutableTreeNode("B", MutableTreeNode("C")))).attach();
 
 	shared test void testFormatLinearTree_Newick()
@@ -70,6 +108,19 @@ class TestTreeFormatter()
 		                      ***C
 		                      ");
 	}
+
+	shared test void testFormatLinearTree_dot()
+	{
+		value result = formatAsDot(getLinearTree());
+		assertEquals(result,
+			"""digraph G
+			   {
+			   "Root" -> "A"
+			   "A" -> "B"
+			   "B" -> "C"
+			   }""");
+	}
+
 
 	MutableTreeNode<String> getLessSimpleTree() =>
 			MutableTreeNode("Root",
@@ -100,7 +151,7 @@ class TestTreeFormatter()
 		                      ");
 	}
 
-	shared test void testFormatLessSimpleTree_default()
+	shared test void testFormatLessSimpleTree_indented_default()
 	{
 		value result = formatAsIndentedLines(getLessSimpleTree());
 		assertEquals(result, "Root
@@ -112,7 +163,7 @@ class TestTreeFormatter()
 		                      ");
 	}
 
-	shared test void testFormatLessSimpleTree_multichar()
+	shared test void testFormatLessSimpleTree_indented_multichar()
 	{
 		value result = formatAsIndentedLines(getLessSimpleTree(), "=> ");
 		assertEquals(result, "Root
@@ -124,6 +175,35 @@ class TestTreeFormatter()
 		                      ");
 	}
 
+	shared test void testFormatLessSimpleTree_dot()
+	{
+		value result = formatAsDot(getLessSimpleTree());
+		assertEquals(result,
+			"""digraph G
+			   {
+			   "Root" -> "A"
+			   "Root" -> "B"
+			   "A" -> "A C"
+			   "A" -> "A D"
+			   "B" -> "B E"
+			   }""");
+	}
+
+	shared test void testFormatLessSimpleTree_dot_nonDirected()
+	{
+		value result = formatAsDot(getLessSimpleTree(), false);
+		assertEquals(result,
+			"""graph G
+			   {
+			   "Root" -- "A"
+			   "Root" -- "B"
+			   "A" -- "A C"
+			   "A" -- "A D"
+			   "B" -- "B E"
+			   }""");
+	}
+
+
 	MutableTreeNode<String> getLastTree() =>
 		MutableTreeNode("Root",
 			MutableTreeNode("A",
@@ -131,7 +211,8 @@ class TestTreeFormatter()
 					MutableTreeNode("c F"),
 					MutableTreeNode("c G")
 				),
-				MutableTreeNode("a D")
+				MutableTreeNode("a D"),
+				MutableTreeNode("""a "last" Z""")
 			),
 			MutableTreeNode("B",
 				MutableTreeNode("b E",
@@ -144,23 +225,43 @@ class TestTreeFormatter()
 	shared test void testFormatLastTree_Newick()
 	{
 		value result = formatAsNewick(getLastTree());
-		assertEquals(result, "(((c F,c G)a C,a D)A,((e H)b E)B)Root");
+		assertEquals(result, """(((c F,c G)a C,a D,a "last" Z)A,((e H)b E)B)Root""");
 	}
 
 	shared test void testFormatLastTree_indented()
 	{
 		value result = formatAsIndentedLines(getLastTree(), "*");
-		assertEquals(result, "Root
-		                      *A
-		                      **a C
-		                      ***c F
-		                      ***c G
-		                      **a D
-		                      *B
-		                      **b E
-		                      ***e H
-		                      ");
+		assertEquals(result, """Root
+		                        *A
+		                        **a C
+		                        ***c F
+		                        ***c G
+		                        **a D
+		                        **a "last" Z
+		                        *B
+		                        **b E
+		                        ***e H
+		                        """);
 	}
+
+	shared test void testFormatLastTree_dot()
+	{
+		value result = formatAsDot(getLastTree());
+		assertEquals(result,
+			"""digraph G
+			   {
+			   "Root" -> "A"
+			   "Root" -> "B"
+			   "A" -> "a C"
+			   "A" -> "a D"
+			   "A" -> "a \"last\" Z"
+			   "B" -> "b E"
+			   "a C" -> "c F"
+			   "a C" -> "c G"
+			   "b E" -> "e H"
+			   }""");
+	}
+
 
 	class Custom(shared Integer n, shared Float whatever) { string => "Custom{``n``, ``whatever``}"; }
 	String customAsString(Custom? c) => c?.n?.string else "?";

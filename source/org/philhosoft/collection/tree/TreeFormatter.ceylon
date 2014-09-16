@@ -141,3 +141,43 @@ shared String formatAsIndentedLines<Element, ActualTreeNode>(ActualTreeNode root
 
 	return sb.string;
 }
+
+// Can be tested at http://cpettitt.github.io/project/dagre-d3/latest/demo/interactive-demo.html for example
+shared String formatAsDot<Element, ActualTreeNode>(ActualTreeNode root, Boolean directed = true,
+			String(Element?) asString = defaultAsString<Element>)
+		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
+{
+	String asDot(ActualTreeNode node)
+	{
+		value dq = "\"";
+		return dq + asString(node.element).replace(dq, "\\" + dq) + dq;
+	}
+
+	// Maybe we could pass a tree traversal as parameter, not sure if that's useful...
+	value treeTraversal = TreeTraversal<ActualTreeNode>(TreeNode<Element, ActualTreeNode>.children);
+	value nodes = treeTraversal.breadthFirstTraversal(root);
+	value sb = StringBuilder();
+	sb.append("``directed then "di" else ""``graph G
+	           {
+	           ");
+	if (root.children.empty)
+	{
+		if (exists e = root.element)
+		{
+			sb.append(asDot(root)).append("\n");
+		}
+	}
+	else
+	{
+		for (n in nodes)
+		{
+			if (exists np = n.parent)
+			{
+				sb.append("``asDot(np)`` -``directed then ">" else "-"`` ``asDot(n)``\n");
+			}
+		}
+	}
+	sb.append("}");
+
+	return sb.string;
+}
