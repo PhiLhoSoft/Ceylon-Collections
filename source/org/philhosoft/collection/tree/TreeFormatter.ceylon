@@ -147,15 +147,14 @@ shared String formatAsDot<Element, ActualTreeNode>(ActualTreeNode root, Boolean 
 			String(Element?) asString = defaultAsString<Element>)
 		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
 {
-	String asDot(ActualTreeNode node)
+	String asDot(TreeNode<Element, ActualTreeNode> node)
 	{
 		value dq = "\"";
 		return dq + asString(node.element).replace(dq, "\\" + dq) + dq;
 	}
 
 	// Maybe we could pass a tree traversal as parameter, not sure if that's useful...
-	value treeTraversal = TreeTraversal<ActualTreeNode>(TreeNode<Element, ActualTreeNode>.children);
-	value nodes = treeTraversal.breadthFirstTraversal(root);
+	value nodes = breadthFirstTraversal(root, TreeNode<Element, ActualTreeNode>.children);
 	value sb = StringBuilder();
 	sb.append("``directed then "di" else ""``graph G
 	           {

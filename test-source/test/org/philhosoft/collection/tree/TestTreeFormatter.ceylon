@@ -1,6 +1,5 @@
 import ceylon.test { test, assertEquals }
-import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines,
-	formatAsDot }
+import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines, formatAsDot }
 
 class TestTreeFormatter()
 {
