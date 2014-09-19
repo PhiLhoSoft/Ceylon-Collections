@@ -202,6 +202,48 @@ class TestTreeFormatter()
 			   }""");
 	}
 
+	shared test void testFormatLessSimpleTree_dot_noLabels()
+	{
+		MutableTreeNode<String?> root =
+			MutableTreeNode<String?>(null,
+				MutableTreeNode<String?>("",
+					MutableTreeNode<String?>(null),
+					MutableTreeNode<String?>("!")
+				),
+				MutableTreeNode<String?>("",
+					MutableTreeNode<String?>(null)
+				)
+			).attach();
+
+		value result = formatAsDot(root);
+		assertEquals(result,
+			"""digraph G
+			   {
+			   "" -> ""
+			   "" -> ""
+			   "" -> ""
+			   "" -> "!"
+			   "" -> ""
+			   }""");
+		/* Maybe we can manage these cases to generate something like:
+			"""digraph G
+			   {
+			   n1 [label=""]
+			   n2 [label=""]
+			   n3 [label=""]
+			   n4 [label=""]
+			   n5 [label=""]
+			   n1 -> n2
+			   n1 -> n3
+			   n2 -> n4
+			   n2 -> "!"
+			   n3 -> n5
+			   }"""
+		 Ie. generate identifiers not already in the tree.
+		 Not sure if that's worth the extra work (use case?).
+		 */
+	}
+
 
 	MutableTreeNode<String> getLastTree() =>
 		MutableTreeNode("Root",

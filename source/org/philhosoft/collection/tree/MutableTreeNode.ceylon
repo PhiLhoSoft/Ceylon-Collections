@@ -2,14 +2,23 @@ import ceylon.collection { LinkedList, MutableList }
 import org.philhosoft.collection.tree { TreeNode }
 
 shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* initialChildren)
-		satisfies TreeNode<Element, MutableTreeNode<Element>> & TreeNodeMutator<Element, MutableTreeNode<Element>>
+		satisfies TreeNode<Element, MutableTreeNode<Element>> &
+				TreeNodeMutator<Element, MutableTreeNode<Element>> &
+				ParentedTreeNode<Element, MutableTreeNode<Element>>
 {
-	// Must be set after object construction. Bidirectional construction is hard / not possible.
-	// See https://groups.google.com/d/msg/ceylon-users/KkohG7kHI64/Io5uc3759WwJ
 	variable MutableTreeNode<Element>? mutableParent = null;
-
 	MutableList<MutableTreeNode<Element>> childList = LinkedList(initialChildren);
 
+//	String initId(String? idp)
+//	{
+//		if (exists idp) { return idp; } else { return "ANON-"; }
+//	}
+//
+//	shared actual String id = initId(idp);
+	// Defined only here, not in the interface, because it is a convenience information for navigation,
+	// and it must be mutable: it must be set after object construction. Bidirectional construction is hard / not possible.
+	// See https://groups.google.com/d/msg/ceylon-users/KkohG7kHI64/Io5uc3759WwJ
+	"The parent node. `null` at the tree root or if the node isn't attached to a parent."
 	shared actual MutableTreeNode<Element>? parent => mutableParent;
 	shared actual Collection<MutableTreeNode<Element>> children => childList;
 	shared actual Element? element;
@@ -17,7 +26,7 @@ shared class MutableTreeNode<Element>(element = null, MutableTreeNode<Element>* 
 
 	shared actual void removeFromParent()
 	{
-		if (exists p = mutableParent)
+		if (exists p = parent)
 		{
 			p.removeChild(this);
 		}
@@ -81,4 +90,11 @@ shared interface TreeNodeMutator<in Element, in ActualTreeNode> of ActualTreeNod
 
 	"Attaches the current node (and its sub-tree) to a new parent."
 	shared formal void attachTo(ActualTreeNode node);
+}
+
+shared interface ParentedTreeNode<Element, ActualTreeNode> of ActualTreeNode
+		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
+{
+	"The parent node. `null` at the tree root or if the node isn't attached to a parent."
+	shared formal ActualTreeNode? parent;
 }

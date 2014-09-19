@@ -2,11 +2,11 @@
 shared interface TreeNode<out Element, out ActualTreeNode> of ActualTreeNode
 		given ActualTreeNode satisfies TreeNode<Element, ActualTreeNode>
 {
+//	"The unique id of this node"
+//	shared formal String id;
+
 	"The optional data attached to this node."
 	shared formal Element? element;
-
-	"The parent node. `null` at the tree root or if the node isn't attached to a parent."
-	shared formal ActualTreeNode? parent;
 
 	"The children below this node. Empty on a leaf."
 	shared formal Collection<ActualTreeNode> children;
