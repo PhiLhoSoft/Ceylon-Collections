@@ -1,6 +1,6 @@
 import ceylon.test { test, assertTrue, assertFalse, assertNull, assertEquals }
 import org.philhosoft.collection.tree { MutableTreeNode, formatAsNewick, formatAsIndentedLines }
-import ceylon.collection { ArrayList }
+import test.org.philhosoft.utility { PseudoRandomDataProvider }
 
 class TestTreeNode()
 {
@@ -197,36 +197,6 @@ class TestTreeNode()
 		                      ");
 	}
 
-	class PseudoRandomDataProdiver(String randomnessSource)
-	{
-		value splitted = ArrayList { elements = randomnessSource.split(); };
-
-		variable Integer indexWord = 0;
-		variable Integer indexLetter = 0;
-
-		shared String nextWord()
-		{
-			if (indexWord >= splitted.size)
-			{
-				indexWord = 0;
-			}
-			value nw = splitted[indexWord++];
-			assert(exists nw);
-			return nw;
-		}
-
-		shared Integer nextInteger()
-		{
-			if (indexLetter >= randomnessSource.size)
-			{
-				indexLetter = 0;
-			}
-			value nc = randomnessSource[indexLetter++];
-			assert(exists nc);
-			return nc.integer;
-		}
-	}
-
 	shared test void testBuiltCustomElement()
 	{
 		object custom satisfies Custom
@@ -234,15 +204,20 @@ class TestTreeNode()
 			shared actual String name => "Root";
 		}
 		MutableTreeNode<Custom> root = MutableTreeNode<Custom>(custom);
-		PseudoRandomDataProdiver pseudoRandom = PseudoRandomDataProdiver(
+		PseudoRandomDataProvider pseudoRandom = PseudoRandomDataProvider(
 			"Ceylon has a powerful static type system
 		    that prevents many bugs while letting you express more, more easily:
-		    union types, intersection types, higher order functions, mixin inheritance, and enumerated types.".normalized);
+		    union types, intersection types, higher order functions,
+		    mixin inheritance, and enumerated types.".normalized);
 
 		for (i in 1:100)
 		{
-			Integer v = pseudoRandom.nextInteger();
-			Float probability = v / 255.0; // Assume pure Ascii... Safe here, as string is provided explicitly.
+
+			Float probability = pseudoRandom.nextFloat();
+			// TODO Finish this! The idea is to create a complex tree by walking the existing one (choosing left / right pseudo-randomly)
+			// and adding a branch at some point.
 		}
 	}
 }
+
+
