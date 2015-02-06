@@ -1,3 +1,9 @@
-/classes/
-/bin/
+*.class
+*.lnk
+*.old
+/.ceylon/
 /.exploded/
+/.settings/
+/bin/
+/classes/
+/modules/
